@@ -1,0 +1,37 @@
+.orbitMicVisualizer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10; /* Above button bg but below icon if handled by z-index */
+}
+
+.orbitFloatingText {
+  position: absolute;
+  bottom: calc(100% + 15px);
+  left: 24px; /* Align with left mic button usually */
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 18px;
+  font-weight: 400; /* Normal */
+  color: #ffffff;
+  background: none;
+  padding: 8px 0;
+  text-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.9),
+    0 2px 8px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  max-width: 100%; /* Fill width */
+  pointer-events: none;
+  z-index: 10001;
+}
+
+.orbitFloatingTextVisible {
+  opacity: 1 !important;
+}
+
+.orbitFloatingTextInterim {
+  opacity: 0.6;
+  font-style: italic;
+}

@@ -1,0 +1,51 @@
+.captionsContainer {
+  position: fixed;
+  bottom: 120px; /* Above the control bar */
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1000;
+  padding: 0 40px;
+}
+
+.captionsText {
+  color: #00FF00; /* Lime green */
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 22px;
+  line-height: 1.2;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  background: transparent;
+  text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  padding: 15px 0;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.karaokeWord {
+  display: inline-block;
+  animation: word-modern-slide 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  filter: blur(8px);
+  opacity: 0;
+  transform: translateX(-15px) translateY(5px) scale(0.95);
+  will-change: transform, opacity, filter;
+}
+
+@keyframes word-modern-slide {
+  0% {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translateX(-20px) translateY(10px) scale(0.9);
+  }
+  100% {
+    opacity: 0.95;
+    filter: blur(0);
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}

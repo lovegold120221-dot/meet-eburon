@@ -1,0 +1,304 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 3.5rem clamp(1.25rem, 3vw, 4rem) 3rem;
+  background: var(--bg);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.page code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  background: rgba(212, 175, 55, 0.15);
+  padding: 0 0.35rem;
+  border-radius: 6px;
+  color: var(--gold);
+}
+
+.page pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.glow {
+  position: absolute;
+  inset: -20% 0 auto 0;
+  height: 320px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.15), transparent 65%);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero {
+  position: relative;
+  z-index: 1;
+  max-width: 880px;
+  margin-bottom: 3rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.heroTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.backLink {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.backLink:hover {
+  color: var(--gold);
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.3rem);
+  line-height: 1.1;
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  text-transform: uppercase;
+}
+
+.docsSubheader {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 680px;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.primaryButton {
+  background: var(--gold);
+  color: #000;
+  border: none;
+}
+
+.primaryButton:hover {
+  background: #f1c40f;
+  transform: translateY(-2px);
+}
+
+.secondaryButton {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  background: var(--glass);
+}
+
+.secondaryButton:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+
+.section {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 3rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+}
+
+.sectionHeader p {
+  margin: 0.35rem 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 720px;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  padding: 1rem 1.1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--gold);
+  background: rgba(212, 175, 55, 0.05);
+}
+
+.card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.codeBlock {
+  background: #000;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem 1.2rem;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #d9e3f0;
+}
+
+.inlineCode {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.85rem;
+  padding: 0 0.35rem;
+  margin-left: 0.3rem;
+}
+
+.endpointGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.endpointCard {
+  padding: 1rem 1.1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--glass);
+  display: grid;
+  gap: 0.6rem;
+  transition: all 0.3s ease;
+}
+
+.endpointCard:hover {
+  border-color: var(--gold);
+  background: rgba(212, 175, 55, 0.05);
+  transform: translateY(-2px);
+}
+
+.endpointHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.method {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.callout {
+  border-radius: 18px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(212, 175, 55, 0.1);
+  padding: 1.1rem 1.2rem;
+}
+
+.callout h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  color: var(--gold);
+}
+
+.callout p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.footer {
+  margin-top: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.footer a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer a:hover {
+  color: var(--gold);
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding-top: 2.5rem;
+  }
+
+  .heroTop {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

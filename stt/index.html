@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orbit + Supabase (Bottom Captions)</title>
+    
+    <!-- External Icons & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #121212; /* Dark Mode Background */
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Prevent scrollbars */
+        }
+
+        /* --- 1. DRAGGABLE CONTROL PILL --- */
+        .control-pill {
+            background-color: #2e7d32; /* Forest Green */
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            padding: 5px 8px;
+            box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+            position: absolute;
+            -webkit-user-select: none;
+            user-select: none;
+            border: 1px solid #22c55e;
+            cursor: grab; /* Hand cursor to indicate draggable */
+            z-index: 1000;
+            
+            /* Initial Position */
+            top: 50px;
+            left: 50px;
+            transition: box-shadow 0.2s;
+        }
+
+        .control-pill:active {
+            cursor: grabbing;
+            box-shadow: 0 8px 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .pill-section {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 30px;
+            gap: 8px;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .pill-section:hover { background-color: rgba(255, 255, 255, 0.15); }
+        
+        .divider { 
+            width: 1px; 
+            height: 20px; 
+            background-color: rgba(255, 255, 255, 0.3); 
+            margin: 0 2px; 
+        }
+
+        /* --- 2. BOTTOM CAPTION BAR (Cinema Style) --- */
+        #caption-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px; /* Height of the black bar */
+            background-color: rgba(0, 0, 0, 0.95);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center text */
+            padding: 0 40px;
+            box-sizing: border-box;
+            z-index: 999;
+        }
+
+        #real-transcript {
+            font-size: 24px;
+            color: #ffffff;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .interim {
+            color: #aaa;
+            font-style: italic;
+        }
+
+        /* --- 3. MICROPHONE DROPDOWN --- */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 115%; /* Show below the pill */
+            left: 0;
+            background-color: #1e1e1e;
+            min-width: 260px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #444;
+            padding: 5px;
+            cursor: default;
+        }
+
+        .dropdown-menu.show { display: block; }
+
+        .dropdown-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            color: #eee;
+            font-size: 14px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-item:hover { background-color: #2e7d32; color: white; }
+
+        /* --- 4. STATUS INDICATORS --- */
+        #status-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-align: right;
+            pointer-events: none;
+        }
+        .status-badge {
+            font-size: 12px;
+            background: rgba(0,0,0,0.6);
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+        .success { color: #22c55e; }
+        .recording { color: #ff5252; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .header-logo {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            height: 35px;
+            z-index: 1001;
+        }
+        .header-logo img {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-logo">
+        <img src="/images/eburon-logo.svg" alt="Orbit Logo">
+    </div>
+
+    <!-- DRAGGABLE UI WRAPPER -->
+    <div id="dragPill" class="control-pill">
+        <!-- Mic Button -->
+        <div class="pill-section" id="micButton">
+            <i class="fa-solid fa-microphone"></i>
+            <span>ORBIT</span>
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Language Icon (Visual) -->
+        <div class="pill-section">
+            <i class="fa-solid fa-globe"></i>
+        </div>
+
+        <!-- Dropdown (Hidden by default) -->
+        <div id="deviceList" class="dropdown-menu"></div>
+    </div>
+
+    <!-- STATUS INFO (Top Right) -->
+    <div id="status-overlay">
+        <div id="mic-status" class="status-badge">Orbit: Active</div>
+        <div id="db-status" class="status-badge">System: Online</div>
+    </div>
+
+    <!-- CAPTION BAR (Bottom) -->
+    <div id="caption-bar">
+        <div id="real-transcript">Orbit is ready for your input...</div>
+    </div>
+
+    <!-- LOGIC -->
+    <script type="module">
+        import { createClient as createDeepgramClient, LiveTranscriptionEvents } from 'https://esm.sh/@deepgram/sdk';
+        import { createClient as createSupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+        // --- CONFIGURATION ---
+        const ORBIT_API_KEY = 'e4a739b4dadfb8c9247108a21653f3b8f4a4ef10';
+        const SUPABASE_URL = 'https://xscdwdnjujpkczfhqrgu.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzY2R3ZG5qdWpwa2N6Zmhxcmd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMzEwNjgsImV4cCI6MjA3NjkwNzA2OH0.xuVAkWA5y1oDW_jC52I8JJXF-ovU-5LIBsY9yXzy6cA';
+
+        const CURRENT_MEETING_ID = '2T6KLR'; 
+        const CURRENT_USER_ID = '8ea01d85-7780-42ad-a8f9-bfdfd1dc399e';
+
+        // --- 1. DRAGGABLE LOGIC ---
+        const dragItem = document.getElementById("dragPill");
+        let active = false;
+        let currentX, currentY, initialX, initialY;
+        let xOffset = 0, yOffset = 0;
+
+        dragItem.addEventListener("mousedown", dragStart);
+        window.addEventListener("mouseup", dragEnd);
+        window.addEventListener("mousemove", drag);
+
+        function dragStart(e) {
+            // Prevent dragging if clicking inside dropdown
+            if (e.target.closest('.dropdown-menu')) return;
+            
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+
+            if (dragItem.contains(e.target)) {
+                active = true;
+            }
+        }
+
+        function dragEnd() {
+            initialX = currentX;
+            initialY = currentY;
+            active = false;
+        }
+
+        function drag(e) {
+            if (active) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+
+                xOffset = currentX;
+                yOffset = currentY;
+
+                setTranslate(currentX, currentY, dragItem);
+            }
+        }
+
+        function setTranslate(xPos, yPos, el) {
+            el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+        }
+
+        // --- 2. DEEPGRAM & SUPABASE LOGIC ---
+        const supabase = createSupabaseClient(SUPABASE_URL, SUPABASE_KEY);
+        let currentConnection = null;
+        let mediaRecorder = null;
+        let activeStream = null;
+        let lineBuffer = ""; // Stores text for the caption bar
+
+        const micButton = document.getElementById('micButton');
+        const deviceList = document.getElementById('deviceList');
+        const transcriptOutput = document.getElementById('real-transcript');
+        const micStatus = document.getElementById('mic-status');
+        const dbStatus = document.getElementById('db-status');
+
+        // Handle Dropdown
+        micButton.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!deviceList.classList.contains('show')) {
+                await populateDevices();
+                deviceList.classList.add('show');
+            } else {
+                deviceList.classList.remove('show');
+            }
+        });
+
+        window.onclick = () => deviceList.classList.remove('show');
+
+        // Get Microphones
+        async function populateDevices() {
+            deviceList.innerHTML = '<div class="dropdown-item">Scanning...</div>';
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: true }); // Request permission
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const inputs = devices.filter(d => d.kind === 'audioinput');
+                
+                deviceList.innerHTML = '';
+                if(inputs.length === 0) {
+                    deviceList.innerHTML = '<div class="dropdown-item">No mics found</div>';
+                    return;
+                }
+
+                inputs.forEach(d => {
+                    const div = document.createElement('div');
+                    div.className = 'dropdown-item';
+                    div.innerHTML = `<i class="fa-solid fa-microphone"></i> ${d.label || 'Mic ' + d.deviceId.slice(0,5)}`;
+                    div.onclick = () => startDeepgram(d.deviceId);
+                    deviceList.appendChild(div);
+                });
+            } catch (err) {
+                console.error(err);
+                deviceList.innerHTML = '<div class="dropdown-item" style="color:red">Permission Denied</div>';
+            }
+        }
+
+        // Start Transcription
+        async function startOrbit(deviceId) {
+            // Cleanup previous session
+            if (currentConnection) currentConnection.requestClose();
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+            if (activeStream) activeStream.getTracks().forEach(t => t.stop());
+
+            micStatus.innerText = 'Connecting...';
+            transcriptOutput.innerText = '';
+
+            try {
+                activeStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: { deviceId: { exact: deviceId } } 
+                });
+
+                const client = createOrbitClient(ORBIT_API_KEY);
+                currentConnection = client.listen.live({
+                    model: 'nova-2',
+                    language: 'en',
+                    smart_format: true,
+                    interim_results: true,
+                    utterance_end_ms: 1000,
+                    vad_events: true
+                });
+
+                currentConnection.on(LiveTranscriptionEvents.Open, () => {
+                    micStatus.innerText = 'Orbit: Active';
+                    micStatus.className = 'status-badge recording';
+                    micButton.classList.add('active');
+                    
+                    mediaRecorder = new MediaRecorder(activeStream);
+                    mediaRecorder.addEventListener('dataavailable', event => {
+                        if (event.data.size > 0 && currentConnection.getReadyState() === 1) {
+                            currentConnection.send(event.data);
+                        }
+                    });
+                    mediaRecorder.start(250);
+                });
+
+                currentConnection.on(LiveTranscriptionEvents.Transcript, (data) => {
+                    const alt = data.channel?.alternatives?.[0];
+                    if (alt && alt.transcript) {
+                        const text = alt.transcript;
+
+                        if (data.is_final) {
+                            transcriptOutput.innerText = text;
+                            saveToSupabase(text);
+                        } else {
+                            transcriptOutput.innerHTML = `<span class="interim">${text}</span>`;
+                        }
+                    }
+                });
+
+                currentConnection.on(LiveTranscriptionEvents.Error, (err) => {
+                    console.error("Transcription Error", err);
+                    micStatus.innerText = 'Orbit: Error';
+                });
+
+            } catch (error) {
+                console.error(error);
+                micStatus.innerText = 'Orbit: Error';
+            }
+        }
+
+        // Save to Database
+        async function saveToSupabase(text) {
+            dbStatus.innerText = 'Syncing...';
+            dbStatus.style.color = '#ffd700'; // Gold
+
+            const { error } = await supabase
+                .from('transcriptions')
+                .insert([{
+                    id: crypto.randomUUID(),
+                    meeting_id: CURRENT_MEETING_ID,
+                    speaker_id: CURRENT_USER_ID,
+                    transcribe_text_segment: text,
+                    user_id: CURRENT_USER_ID
+                }]);
+
+            if (error) {
+                console.error("Supabase Error:", error);
+                dbStatus.innerText = 'Sync Failed';
+                dbStatus.style.color = 'red';
+            } else {
+                dbStatus.innerText = 'Saved ✓';
+                dbStatus.style.color = '#4caf50'; // Green
+                setTimeout(() => { dbStatus.innerText = 'DB: Idle'; dbStatus.style.color = '#ccc'; }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>

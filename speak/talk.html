@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Translate Overlay (WebSpeech + Google Translate)</title>
+  <style>
+    :root{
+      --bg: rgba(0,0,0,.86);
+      --stroke: rgba(255,255,255,.18);
+      --stroke2: rgba(255,255,255,.12);
+      --txt: #fff;
+      --muted: rgba(255,255,255,.72);
+      --pill: rgba(0,0,0,.35);
+      --shadow: 0 14px 40px rgba(0,0,0,.45);
+      --radius: 14px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      background:#0b0b0d;
+      color:var(--txt);
+      font-family: var(--mono);
+      height:100vh;
+    }
+
+    .overlay{
+      position:fixed;
+      left:12px;
+      right:12px;
+      top:12px;
+      margin:auto;
+      max-width: 980px;
+      background: var(--bg);
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
+    }
+
+    .overlay.in-host{
+      position:absolute;
+      left:12px;
+      right:12px;
+      top:12px;
+      max-width: none;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 10px 6px 10px;
+      gap:10px;
+    }
+
+    .leftGroup{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border: 1px solid var(--stroke);
+      border-radius: 999px;
+      background: var(--pill);
+      color: var(--txt);
+      font-size: 14px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .pill button,
+    .pill select{
+      all: unset;
+      cursor: pointer;
+      color: var(--txt);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .pill select{
+      padding-right: 14px;
+      position:relative;
+    }
+
+    .arrow{
+      opacity:.9;
+      font-size:14px;
+      padding:0 2px;
+      -webkit-user-select:none;
+      user-select:none;
+    }
+
+    .rightGroup{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex: 0 0 auto;
+    }
+
+    .iconBtn{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      border: 1px solid var(--stroke2);
+      background: rgba(255,255,255,.06);
+      color: var(--txt);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+    }
+
+    .iconBtn:hover{ background: rgba(255,255,255,.10); }
+
+    .content{
+      padding: 8px 14px 12px 14px;
+    }
+
+    .bigText{
+      font-size: 30px;
+      line-height: 1.22;
+      letter-spacing: 0.2px;
+      word-break: break-word;
+    }
+
+    @media (min-width: 520px){
+      .bigText{ font-size: 34px; }
+    }
+
+    .subline{
+      margin-top:10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding-top:10px;
+    }
+
+    .statusDot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.25);
+      box-shadow: 0 0 0 2px rgba(255,255,255,.08) inset;
+    }
+
+    .statusDot.on{
+      background: #36ff7a;
+      box-shadow: 0 0 0 2px rgba(54,255,122,.20) inset, 0 0 18px rgba(54,255,122,.25);
+    }
+
+    .statusDot.err{
+      background: #ff4d4d;
+      box-shadow: 0 0 0 2px rgba(255,77,77,.22) inset, 0 0 18px rgba(255,77,77,.20);
+    }
+
+    .chevronWrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 0 0 10px 0;
+    }
+
+    .chevronBtn{
+      width:42px;
+      height:28px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.85);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      -webkit-user-select:none;
+      user-select:none;
+    }
+
+    .collapsed .content{ display:none; }
+    .collapsed .chevronBtn{ transform: rotate(180deg); }
+  </style>
+</head>
+
+<body>
+
+<!-- ✅ Cartesia autoplay audio target -->
+<audio id="tts" autoplay></audio>
+
+<div id="overlay" class="overlay">
+  <div class="topbar">
+    <div class="leftGroup">
+      <div class="pill" title="Tap to start/stop listening">
+        <button id="toggleListenBtn" type="button" aria-label="Toggle Listening" style="display:inline-flex;align-items:center;gap:8px;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;">
+            <!-- translate icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M4 5h7m-7 4h5m7-4h4m-4 0v14m0-14l-4 4m4-4l4 4" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/>
+              <path d="M5 19h6m-6 0v-4m0 4l4-4" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/>
+            </svg>
+          </span>
+          <span id="translatingLabel">Translating</span>
+        </button>
+      </div>
+
+      <div class="pill">
+        <select id="srcLang" aria-label="Source language"></select>
+      </div>
+
+      <div class="arrow">→</div>
+
+      <div class="pill">
+        <select id="tgtLang" aria-label="Target language"></select>
+        <span style="opacity:.75;font-size:12px;">▾</span>
+      </div>
+    </div>
+
+    <div class="rightGroup">
+      <button id="fsBtn" class="iconBtn" type="button" aria-label="Fullscreen" title="Fullscreen">
+        <!-- fullscreen icon -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.92"/>
+        </svg>
+      </button>
+      <button id="closeBtn" class="iconBtn" type="button" aria-label="Close" title="Close">
+        <!-- close icon -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M6 6l12 12M18 6L6 18" stroke="white" stroke-width="1.8" stroke-linecap="round" opacity="0.92"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div id="bigText" class="bigText">Tap “Translating” to start listening…</div>
+
+    <div class="subline">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="dot" class="statusDot"></span>
+        <span id="status">Idle</span>
+      </div>
+      <div id="debug" style="opacity:.85;text-align:right;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+    </div>
+  </div>
+
+  <div class="chevronWrap">
+    <button id="chevBtn" class="chevronBtn" type="button" aria-label="Collapse/Expand">⌄</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   Mount overlay inside a host viewport if present:
+   Add attribute data-translate-overlay-host to any container.
+========================================================= */
+(() => {
+  const host = document.querySelector("[data-translate-overlay-host]");
+  const overlay = document.getElementById("overlay");
+  if (host) {
+    const cs = getComputedStyle(host);
+    if (cs.position === "static") host.style.position = "relative";
+    host.appendChild(overlay);
+    overlay.classList.add("in-host");
+  }
+})();
+
+/* =========================================================
+   ✅ DEEPGRAM STT & CARTESIA TTS
+   - Speaks newest translated segment (each FINAL speech chunk)
+   - Queues chunks and plays sequentially
+   - Uses Authorization: Bearer (per docs)
+========================================================= */
+const DEEPGRAM_KEY = "6c275acd1917225b560d181f411e554f36a39a18";
+const CARTESIA_CFG = {
+  endpoint: "https://api.cartesia.ai/tts/bytes",
+  version: "2025-04-16",
+  model_id: "sonic-3-latest",
+  voice_id: "9c7e6604-52c6-424a-9f9f-2c4ad89f3bb9",
+  output_primary: { container: "wav", encoding: "pcm_f32le", sample_rate: 44100 },
+  output_fallback:{ container: "wav", encoding: "pcm_s16le", sample_rate: 44100 },
+  generation_config: { speed: 1, volume: 1 }, // sonic-3
+  speed: "normal"
+};
+
+const LS_CARTESIA_KEY = "CARTESIA_KEY";
+const ttsAudio = document.getElementById("tts");
+let ttsQueue = [];
+let ttsBusy = false;
+
+function getCartesiaKey() {
+  return (localStorage.getItem(LS_CARTESIA_KEY) || "").trim();
+}
+
+function ensureCartesiaKey() {
+  let k = getCartesiaKey();
+  if (k) return k;
+  k = (prompt("Paste Cartesia API key (stored locally in this browser):") || "").trim();
+  if (!k) return "";
+  localStorage.setItem(LS_CARTESIA_KEY, k);
+  return k;
+}
+
+async function unlockAudioOnce() {
+  // Helps on mobile autoplay restrictions
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) {
+      const ctx = new AC();
+      await ctx.resume();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      gain.gain.value = 0.0001; // nearly silent
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.1);
+      
+      // Do NOT close context immediately if we want background persistence.
+      // Instead, we will keep a background interval ensuring context is active.
+    }
+    startBackgroundLoop();
+  } catch (_) {}
+}
+
+let bgInterval = null;
+function startBackgroundLoop() {
+  if (bgInterval) return;
+  // create a very short silent beep every 20s to keep connection alive on some browsers
+  bgInterval = setInterval(async () => {
+    if (!listening && ttsQueue.length === 0) return; // only needed if active
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        const ctx = new AC();
+        await ctx.resume();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        gain.gain.value = 0.00001;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.01);
+      }
+    } catch(e) {}
+  }, 15000);
+}
+
+function splitSpeakSegments(text) {
+  const t = normalizeSpaces(text);
+  if (!t) return [];
+  const parts = t.match(/[^.!?…]+[.!?…]*/g) || [t];
+  const out = [];
+  for (const p of parts.map(s => s.trim()).filter(Boolean)) {
+    if (p.length <= 180) out.push(p);
+    else for (let i=0;i<p.length;i+=180) out.push(p.slice(i,i+180));
+  }
+  return out;
+}
+
+function enqueueTTS(text) {
+  const segs = splitSpeakSegments(text);
+  if (!segs.length) return;
+      ttsQueue.push(...segs);
+    processTTSQueue().catch(()=>{});
+  }
+
+// ttsAudio.addEventListener("ended", ...); // Removed to use async loop instead
+
+async function cartesiaBytes(transcript, language, useFallback=false) {
+  const key = ensureCartesiaKey();
+  if (!key) throw new Error("No Cartesia key provided.");
+
+  // Docs show Authorization Bearer required. :contentReference[oaicite:2]{index=2}
+  const headers = {
+    "Content-Type": "application/json",
+    "Cartesia-Version": CARTESIA_CFG.version,
+    "Accept": "audio/wav",
+    "Authorization": `Bearer ${key}`,
+    // Compatibility: some setups also accept API key header
+    "X-API-Key": key
+  };
+
+  const output_format = useFallback ? CARTESIA_CFG.output_fallback : CARTESIA_CFG.output_primary;
+
+  const body = {
+    model_id: CARTESIA_CFG.model_id,
+    transcript,
+    voice: { mode: "id", id: CARTESIA_CFG.voice_id },
+    output_format,
+    language: language || null,
+    generation_config: CARTESIA_CFG.generation_config,
+    speed: CARTESIA_CFG.speed,
+    save: false
+  };
+
+  const res = await fetch(CARTESIA_CFG.endpoint, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) {
+    const txt = await res.text().catch(()=> "");
+    throw new Error(`Cartesia HTTP ${res.status}: ${txt || res.statusText}`);
+  }
+
+  return await res.blob();
+}
+
+async function setAndPlayBlob(blob) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(blob);
+    let done = false;
+
+    const cleanup = () => {
+      ttsAudio.removeEventListener("error", onErr);
+      ttsAudio.removeEventListener("canplaythrough", onCanPlay);
+    };
+
+    const onErr = () => {
+      if (done) return;
+      done = true;
+      cleanup();
+      resolve(false);
+    };
+
+    const onCanPlay = async () => {
+      if (done) return;
+      try {
+        await ttsAudio.play();
+        done = true;
+        cleanup();
+        resolve(true);
+      } catch {
+        done = true;
+        cleanup();
+        resolve(false);
+      }
+    };
+
+    ttsAudio.addEventListener("error", onErr, { once: true });
+    ttsAudio.addEventListener("canplaythrough", onCanPlay, { once: true });
+    ttsAudio.src = url;
+
+    setTimeout(() => {
+      if (done) return;
+      done = true;
+      cleanup();
+      resolve(ttsAudio.readyState >= 2);
+    }, 1500);
+  });
+}
+
+  async function speakText(text, langCode) {
+    // Try float WAV first, fallback to s16le if decode fails.
+    const blob1 = await cartesiaBytes(text, langCode, false);
+    const ok1 = await setAndPlayBlob(blob1);
+    if (ok1) {
+      await waitForEnded();
+      return;
+    }
+
+    const blob2 = await cartesiaBytes(text, langCode, true);
+    const ok2 = await setAndPlayBlob(blob2);
+    if (!ok2) throw new Error("Audio decode failed (try Chrome, or switch encoding).");
+    await waitForEnded();
+  }
+
+  function waitForEnded() {
+    return new Promise(resolve => {
+      ttsAudio.addEventListener("ended", resolve, { once: true });
+    });
+  }
+
+  async function processTTSQueue() {
+    if (ttsBusy) return;
+    ttsBusy = true;
+
+    while (ttsQueue.length > 0) {
+      const next = ttsQueue.shift();
+      try {
+        setStatus("Speaking…", "on");
+        await speakText(next, ui.tgtLang.value);
+      } catch (e) {
+        setStatus("TTS failed (skipping)", "err");
+        ui.debug.textContent = String(e?.message || e);
+        // Continue to next item
+      }
+    }
+    
+    ttsBusy = false;
+    setStatus(listening ? "Listening…" : "Idle", listening ? "on" : "idle");
+  }
+
+/* =========================================================
+   Deepgram STT (WebSocket)
+========================================================= */
+let dgSocket = null;
+let mediaRecorder = null;
+let keepAliveInterval = null;
+
+const ui = {
+  overlay: document.getElementById("overlay"),
+  bigText: document.getElementById("bigText"),
+  status: document.getElementById("status"),
+  debug: document.getElementById("debug"),
+  dot: document.getElementById("dot"),
+  toggleListenBtn: document.getElementById("toggleListenBtn"),
+  translatingLabel: document.getElementById("translatingLabel"),
+  srcLang: document.getElementById("srcLang"),
+  tgtLang: document.getElementById("tgtLang"),
+  fsBtn: document.getElementById("fsBtn"),
+  closeBtn: document.getElementById("closeBtn"),
+  chevBtn: document.getElementById("chevBtn"),
+};
+
+function setStatus(text, mode="idle") {
+  ui.status.textContent = text;
+  ui.dot.classList.remove("on", "err");
+  if (mode === "on") ui.dot.classList.add("on");
+  if (mode === "err") ui.dot.classList.add("err");
+}
+
+function mapDeepgramLang(code) {
+  // Deepgram supports BCP-47 tags
+  const m = {
+    en: "en-US",
+    nl: "nl-NL",
+    fr: "fr-FR",
+    de: "de-DE",
+    es: "es-ES",
+    tr: "tr-TR",
+    tl: "fil-PH",
+    it: "it-IT",
+    pt: "pt-BR",
+    ru: "ru-RU",
+    ja: "ja-JP",
+    zh: "zh-CN",
+    "zh-CN": "zh-CN",
+    "zh-TW": "zh-TW"
+  };
+  return m[code] || code;
+}
+
+async function startDeepgram() {
+  const lang = mapDeepgramLang(ui.srcLang.value);
+  const url = `wss://api.deepgram.com/v1/listen?smart_format=true&interim_results=true&model=nova-2&language=${lang}`;
+  
+  dgSocket = new WebSocket(url, ["token", DEEPGRAM_KEY]);
+
+  dgSocket.onopen = () => {
+    setStatus("Connected", "on");
+    startRecorder();
+  };
+
+  dgSocket.onmessage = (msg) => {
+    try {
+      const data = JSON.parse(msg.data);
+      if (data.channel && data.channel.alternatives && data.channel.alternatives[0]) {
+        const alt = data.channel.alternatives[0];
+        const transcript = alt.transcript;
+        
+        if (transcript) {
+          if (data.is_final) {
+             finalText = normalizeSpaces(finalText + " " + transcript);
+             interimText = "";
+             // ✅ Immediate Final Translation
+             translateAndSpeakSegment(transcript).catch(()=>{});
+          } else {
+             interimText = normalizeSpaces(transcript);
+          }
+          
+          const full = currentFullText();
+          ui.debug.textContent = full ? `Heard: ${full.slice(-90)}` : "";
+          // Update UI with interim text quickly
+          scheduleTranslateNow(false);
+          
+          // Keep-Alive for background
+          if (keepAliveInterval === null) {
+              // We could send a keepalive to DG if needed, but sending audio handles that.
+              // This is mainly for the browser process.
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  dgSocket.onclose = () => {
+    if (listening) {
+      setStatus("Reconnecting...", "err");
+      setTimeout(startDeepgram, 1000);
+    } else {
+      setStatus("Idle");
+    }
+  };
+
+  dgSocket.onerror = (e) => {
+    console.error("DG Error", e);
+    setStatus("Connection Error", "err");
+  };
+}
+
+async function startRecorder() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // Use smaller timeslice for lower latency
+    mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+    
+    mediaRecorder.addEventListener("dataavailable", event => {
+      if (event.data.size > 0 && dgSocket && dgSocket.readyState === WebSocket.OPEN) {
+        dgSocket.send(event.data);
+      }
+    });
+
+    mediaRecorder.start(250); // 250ms chunks
+    setStatus("Listening…", "on");
+    ui.translatingLabel.textContent = "Broadcasting";
+    
+  } catch (e) {
+    setStatus("Mic Access Error", "err");
+    ui.bigText.textContent = "Microphone access denied or not available.";
+    listening = false;
+    dgSocket.close();
+  }
+}
+
+async function startListening() {
+  if (listening) return;
+  await unlockAudioOnce(); // Ensure audio context is ready
+  ensureCartesiaKey();
+  
+  finalText = "";
+  interimText = "";
+  lastTranslatedKey = "";
+  ui.bigText.textContent = "Connecting to Deepgram…";
+  setStatus("Connecting…", "on");
+  
+  listening = true;
+  startDeepgram();
+}
+
+function stopListening() {
+  listening = false;
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t => t.stop());
+  }
+  if (dgSocket) {
+    dgSocket.close();
+    dgSocket = null;
+  }
+  setStatus("Idle");
+}
+
+/* =========================================================
+   Event Listeners & Cleanup matches
+========================================================= */
+let finalText = "";
+let interimText = "";
+let lastTranslatedKey = "";
+let translateTimer = null;
+
+function normalizeSpaces(s) {
+  return (s || "").replace(/\s+/g, " ").trim();
+}
+
+function currentFullText() {
+  return normalizeSpaces((finalText + " " + interimText).trim());
+}
+
+/* =========================================================
+   Google Translate (client-side demo)
+========================================================= */
+async function googleTranslate(text, sl, tl) {
+  const q = encodeURIComponent(text);
+  const url =
+    `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&dt=t&q=${q}`;
+
+  const res = await fetch(url, { method: "GET" });
+  if (!res.ok) throw new Error("Translate HTTP " + res.status);
+
+  const data = await res.json();
+  const chunks = (data && data[0]) ? data[0] : [];
+  const translated = chunks.map(x => x && x[0] ? x[0] : "").join("");
+  return translated.trim();
+}
+
+function scheduleTranslateNow(force=false) {
+  if (translateTimer) clearTimeout(translateTimer);
+  translateTimer = setTimeout(async () => {
+    const sl = ui.srcLang.value;
+    const tl = ui.tgtLang.value;
+    const full = currentFullText();
+    if (!full) return;
+
+    const clipped = full.length > 520 ? full.slice(-520) : full;
+
+    const key = `${sl}|${tl}|${clipped}`;
+    if (!force && key === lastTranslatedKey) return;
+    lastTranslatedKey = key;
+
+    try {
+      setStatus("Translating…", "on");
+      ui.debug.textContent = `${sl}→${tl}`;
+
+      const translated = await googleTranslate(clipped, sl, tl);
+      ui.bigText.textContent = translated || "…";
+
+      setStatus(listening ? "Listening…" : "Idle", listening ? "on" : "idle");
+    } catch (err) {
+      setStatus("Translate error (CORS/network).", "err");
+      ui.debug.textContent = String(err?.message || err);
+      ui.bigText.textContent = "Translate request blocked (network/CORS).";
+    }
+  // Debounce interim updates slightly for UI, but final results are instant.
+  }, force ? 0 : 100);
+}
+
+/* =========================================================
+   NEW: speak newest translated segment from FINAL speech chunks
+========================================================= */
+async function translateAndSpeakSegment(finalSegment) {
+  const seg = normalizeSpaces(finalSegment);
+  if (!seg) return;
+
+  const sl = ui.srcLang.value;
+  const tl = ui.tgtLang.value;
+
+  try {
+    // Translate just the NEW segment, then speak it.
+    const translatedSeg = await googleTranslate(seg, sl, tl);
+    if (translatedSeg) enqueueTTS(translatedSeg);
+  } catch (e) {
+    // Do not break main flow; just show debug.
+    ui.debug.textContent = "Segment translate/TTS error: " + String(e?.message || e);
+  }
+}
+
+/* =========================================================
+   Speech result logic moved to socket.onmessage
+========================================================= */
+// function onSpeechResult(event) { ... }  <-- Removed
+
+/* =========================================================
+   UI actions
+========================================================= */
+ui.toggleListenBtn.addEventListener("click", () => {
+  if (listening) stopListening();
+  else startListening();
+});
+
+ui.srcLang.addEventListener("change", () => {
+    // If we are listening, we might want to restart deepgram with new lang
+    if (listening) {
+        stopListening();
+        startListening();
+    }
+    scheduleTranslateNow(true);
+});
+
+ui.tgtLang.addEventListener("change", () => {
+  scheduleTranslateNow(true);
+});
+
+ui.closeBtn.addEventListener("click", () => {
+  stopListening();
+  ui.overlay.style.display = "none";
+});
+
+ui.chevBtn.addEventListener("click", () => {
+  ui.overlay.classList.toggle("collapsed");
+});
+
+ui.fsBtn.addEventListener("click", async () => {
+  const el = ui.overlay;
+  try{
+    if (!document.fullscreenElement) await el.requestFullscreen();
+    else await document.exitFullscreen();
+  }catch(_){}
+});
+
+/* Initial state */
+setStatus("Idle");
+
+/* =========================================================
+   Initialize Languages
+========================================================= */
+const ALL_LANGS = {
+  "af": "Afrikaans",
+  "sq": "Albanian",
+  "am": "Amharic",
+  "ar": "Arabic",
+  "hy": "Armenian",
+  "az": "Azerbaijani",
+  "eu": "Basque",
+  "be": "Belarusian",
+  "bn": "Bengali",
+  "bs": "Bosnian",
+  "bg": "Bulgarian",
+  "ca": "Catalan",
+  "ceb": "Cebuano",
+  "ny": "Chichewa",
+  "zh-CN": "Chinese (Simplified)",
+  "zh-TW": "Chinese (Traditional)",
+  "co": "Corsican",
+  "hr": "Croatian",
+  "cs": "Czech",
+  "da": "Danish",
+  "nl": "Dutch",
+  "en": "English",
+  "eo": "Esperanto",
+  "et": "Estonian",
+  "tl": "Filipino (Tagalog)",
+  "fi": "Finnish",
+  "fr": "French",
+  "fy": "Frisian",
+  "gl": "Galician",
+  "ka": "Georgian",
+  "de": "German",
+  "el": "Greek",
+  "gu": "Gujarati",
+  "ht": "Haitian Creole",
+  "ha": "Hausa",
+  "haw": "Hawaiian",
+  "he": "Hebrew",
+  "hi": "Hindi",
+  "hmn": "Hmong",
+  "hu": "Hungarian",
+  "is": "Icelandic",
+  "ig": "Igbo",
+  "id": "Indonesian",
+  "ga": "Irish",
+  "it": "Italian",
+  "ja": "Japanese",
+  "jw": "Javanese",
+  "kn": "Kannada",
+  "kk": "Kazakh",
+  "km": "Khmer",
+  "rw": "Kinyarwanda",
+  "ko": "Korean",
+  "ku": "Kurdish (Kurmanji)",
+  "ky": "Kyrgyz",
+  "lo": "Lao",
+  "la": "Latin",
+  "lv": "Latvian",
+  "lt": "Lithuanian",
+  "lb": "Luxembourgish",
+  "mk": "Macedonian",
+  "mg": "Malagasy",
+  "ms": "Malay",
+  "ml": "Malayalam",
+  "mt": "Maltese",
+  "mi": "Maori",
+  "mr": "Marathi",
+  "mn": "Mongolian",
+  "my": "Myanmar (Burmese)",
+  "ne": "Nepali",
+  "no": "Norwegian",
+  "or": "Odia (Oriya)",
+  "ps": "Pashto",
+  "fa": "Persian",
+  "pl": "Polish",
+  "pt": "Portuguese",
+  "pa": "Punjabi",
+  "ro": "Romanian",
+  "ru": "Russian",
+  "sm": "Samoan",
+  "gd": "Scots Gaelic",
+  "sr": "Serbian",
+  "st": "Sesotho",
+  "sn": "Shona",
+  "sd": "Sindhi",
+  "si": "Sinhala",
+  "sk": "Slovak",
+  "sl": "Slovenian",
+  "so": "Somali",
+  "es": "Spanish",
+  "su": "Sundanese",
+  "sw": "Swahili",
+  "sv": "Swedish",
+  "tg": "Tajik",
+  "ta": "Tamil",
+  "tt": "Tatar",
+  "te": "Telugu",
+  "th": "Thai",
+  "tr": "Turkish",
+  "tk": "Turkmen",
+  "uk": "Ukrainian",
+  "ur": "Urdu",
+  "ug": "Uyghur",
+  "uz": "Uzbek",
+  "vi": "Vietnamese",
+  "cy": "Welsh",
+  "xh": "Xhosa",
+  "yi": "Yiddish",
+  "yo": "Yoruba",
+  "zu": "Zulu"
+};
+
+function populateLangs() {
+  const mkOpt = (k, v) => `<option value="${k}">${v}</option>`;
+  const opts = Object.entries(ALL_LANGS).map(([k,v]) => mkOpt(k,v)).join("");
+  ui.srcLang.innerHTML = opts;
+  ui.tgtLang.innerHTML = opts;
+  
+  // Set defaults
+  ui.srcLang.value = "en";
+  ui.tgtLang.value = "nl";
+}
+populateLangs();
+</script>
+
+</body>
+</html>

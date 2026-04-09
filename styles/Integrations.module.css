@@ -1,0 +1,182 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+  padding: clamp(2rem, 5vw, 3rem);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.heroContent {
+  max-width: 520px;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: rgba(212, 175, 55, 0.15);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.heroIcon {
+  font-size: 1.1rem;
+}
+
+.heroContent h1 {
+  margin: 0.75rem 0;
+  font-size: clamp(2.2rem, 4vw, 3rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -1.5px;
+}
+
+.heroContent p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+.heroAction {
+  min-width: 240px;
+}
+
+.primaryButton {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 1rem 1.5rem;
+  background: var(--gold);
+  color: #000;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.primaryButton:hover {
+  background: #f1c40f;
+  transform: translateY(-2px);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.toolCard {
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-height: 260px;
+  transition: all 0.3s ease;
+}
+
+.toolCard:hover {
+  border-color: var(--gold);
+  background: rgba(212, 175, 55, 0.05);
+  transform: translateY(-5px);
+}
+
+.toolIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: rgba(212, 175, 55, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.toolCard h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.toolCard p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+.linkButton {
+  border: none;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  background: rgba(212, 175, 55, 0.2);
+  color: var(--gold);
+  cursor: pointer;
+  align-self: flex-start;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.linkButton:hover {
+  background: rgba(212, 175, 55, 0.3);
+}
+
+.linkButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toolResult {
+  background: #000;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  max-height: 160px;
+  overflow: auto;
+  margin: 0;
+  font-family: ui-monospace, monospace;
+  color: #d9e3f0;
+}
+
+.toolError {
+  color: #ff4b4b;
+  font-size: 0.8rem;
+  padding: 0.5rem;
+  background: rgba(255, 75, 75, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 75, 75, 0.3);
+}
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+  }
+
+  .heroAction {
+    width: 100%;
+  }
+}

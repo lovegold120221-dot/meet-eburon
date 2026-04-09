@@ -1,0 +1,67 @@
+/* OrbitSubtitleOverlay.module.css */
+/* Full width subtitle overlay positioned 75px above the bottom icons */
+
+.overlay {
+  position: fixed;
+  bottom: 75px;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  pointer-events: none;
+  padding: 0 16px;
+  animation: fadeIn 0.15s ease;
+}
+
+.subtitleBox {
+  background: rgba(0, 0, 0, 0.85);
+  padding: 10px 24px;
+  border-radius: 4px;
+  border-bottom: 2px solid rgba(50, 205, 50, 0.5);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  width: 100%;
+}
+
+.text {
+  font-size: 14px;
+  color: #32cd32;
+  font-weight: 500;
+  line-height: 1.4;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: streamIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes streamIn {
+  from { 
+    opacity: 0.5;
+    transform: translateX(-10px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .overlay {
+    bottom: 75px;
+    padding: 0 10px;
+  }
+  
+  .subtitleBox {
+    padding: 8px 16px;
+  }
+  
+  .text {
+    font-size: 13px;
+  }
+}
