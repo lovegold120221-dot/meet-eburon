@@ -659,7 +659,7 @@
         function restoreOtherMedia() {
             duckRefCount = Math.max(0, duckRefCount - 1);
             if (duckRefCount !== 0) return;
-            for (const [el, st] of duckStore.entries()) {
+            for (const[el, st] of duckStore.entries()) {
                 try {
                     el.muted = st.muted;
                     if (!el.muted && typeof st.vol === "number") rampVolume(el, st.vol, RESTORE_FADE_MS);
@@ -736,7 +736,7 @@
 
         function splitSpeakSegments(text) {
             const t = normalizeSpaces(text);
-            if (!t) return [];
+            if (!t) return[];
             const segments = [];
             const sentences = t.split(/([.!?…]+\s*)/);
             let currentSegment = "";
@@ -797,7 +797,8 @@
             const res = await fetch(_d('aHR0cHM6Ly9hcGkuY2FydGVzaWEuYWkvdHRzL2J5dGVz'), {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",[_d('WC1BUEktS2V5')]: _d('c2tfY2FyX2ZwVHBqbXlCeXFrOE56bldQVjh1Mkw='),[_d('Q2FydGVzaWEtVmVyc2lvbg==')]: _d('MjAyNS0wNC0xNg==')
+                    "Content-Type": "application/json",
+                    // The Cartesia API key is Base64 encoded below to hide it from CTRL+F in source[_d('WC1BUEktS2V5')]: _d('c2tfY2FyX1lwdUxGWFhCM1h2azE5aUFkeUxyWWE='),[_d('Q2FydGVzaWEtVmVyc2lvbg==')]: _d('MjAyNS0wNC0xNg==')
                 },
                 body: JSON.stringify({
                     model_id: _d('c29uaWMtMw=='), transcript, language: bLang,
@@ -1064,7 +1065,7 @@
             const res = await fetch(url);
             if (!res.ok) throw new Error("Translation offline");
             const data = await res.json();
-            return ((data && data[0]) ? data[0] : []).map(x => x && x[0] ? x[0] : "").join("").trim();
+            return ((data && data[0]) ? data[0] :[]).map(x => x && x[0] ? x[0] : "").join("").trim();
         }
 
         async function _pT(text, sl, tl) {
@@ -1302,10 +1303,7 @@
         });
         ui.tgtLang.addEventListener("change", () => { renderRoomTranscripts(); });
 
-        const VARIANTS = [["en-US", "English (United States)", "en-US", "en-US", "en"],["en-GB", "English (United Kingdom)", "en-GB", "en-GB", "en"],["en-AU", "English (Australia)", "en-AU", "en-AU", "en"],
-            ["en-CA", "English (Canada)", "en-CA", "en-CA", "en"],["en-NZ", "English (New Zealand)", "en-NZ", "en-NZ", "en"],["en-PH", "English (Philippines)", "en-PH", "en-PH", "en"],["en-ZA", "English (South Africa)", "en-ZA", "en-ZA", "en"],["en-IN", "English (India)", "en-IN", "en-IN", "en"],["nl-NL", "Dutch (Netherlands)", "nl", "nl-NL", "nl"],["nl-BE", "Dutch (Belgium / Flemish)", "nl-BE", "nl-BE", "nl"],["fr-FR", "French (France)", "fr-FR", "fr-FR", "fr"],["fr-CA", "French (Canada)", "fr-CA", "fr-CA", "fr"],["fr-CH", "French (Switzerland)", "fr-CH", "fr-CH", "fr"],["es-ES", "Spanish (Spain)", "es-ES", "es-ES", "es"],["es-MX", "Spanish (Mexico)", "es-MX", "es-MX", "es"],["es-US", "Spanish (United States)", "es-US", "es-US", "es"],["es-419", "Spanish (Latin America)", "es-419", "es-419", "es"],
-            ["es-AR", "Spanish (Argentina)", "es-AR", "es-AR", "es"],
-            ["es-CL", "Spanish (Chile)", "es-CL", "es-CL", "es"],["es-CO", "Spanish (Colombia)", "es-CO", "es-CO", "es"],["es-PE", "Spanish (Peru)", "es-PE", "es-PE", "es"],["es-VE", "Spanish (Venezuela)", "es-VE", "es-VE", "es"],["es-UY", "Spanish (Uruguay)", "es-UY", "es-UY", "es"],["es-EC", "Spanish (Ecuador)", "es-EC", "es-EC", "es"],["es-GT", "Spanish (Guatemala)", "es-GT", "es-GT", "es"],["es-HN", "Spanish (Honduras)", "es-HN", "es-HN", "es"],["es-NI", "Spanish (Nicaragua)", "es-NI", "es-NI", "es"],["es-PA", "Spanish (Panama)", "es-PA", "es-PA", "es"],["es-PY", "Spanish (Paraguay)", "es-PY", "es-PY", "es"],["es-PR", "Spanish (Puerto Rico)", "es-PR", "es-PR", "es"],["es-CR", "Spanish (Costa Rica)", "es-CR", "es-CR", "es"],["es-SV", "Spanish (El Salvador)", "es-SV", "es-SV", "es"],["es-HT", "Spanish (Haiti)", "es-HT", "es-HT", "es"],["pt-PT", "Portuguese (Portugal)", "pt-PT", "pt-PT", "pt"],["pt-BR", "Portuguese (Brazil)", "pt-BR", "pt-BR", "pt"],["zh-CN", "Chinese (China / Simplified)", "zh-CN", "zh-CN", "zh"],["zh-TW", "Chinese (Taiwan / Traditional)", "zh-TW", "zh-TW", "zh"],["zh-HK", "Chinese (Hong Kong)", "zh-HK", "zh-HK", "zh"],["zh-Hans", "Chinese (Simplified Script)", "zh-Hans", "zh-Hans", "zh"],["zh-Hant", "Chinese (Traditional Script)", "zh-Hant", "zh-Hant", "zh"],
+        const VARIANTS = [["en-US", "English (United States)", "en-US", "en-US", "en"],["en-GB", "English (United Kingdom)", "en-GB", "en-GB", "en"],["en-AU", "English (Australia)", "en-AU", "en-AU", "en"],["en-CA", "English (Canada)", "en-CA", "en-CA", "en"],["en-NZ", "English (New Zealand)", "en-NZ", "en-NZ", "en"],["en-PH", "English (Philippines)", "en-PH", "en-PH", "en"],["en-ZA", "English (South Africa)", "en-ZA", "en-ZA", "en"],["en-IN", "English (India)", "en-IN", "en-IN", "en"],["nl-NL", "Dutch (Netherlands)", "nl", "nl-NL", "nl"],["nl-BE", "Dutch (Belgium / Flemish)", "nl-BE", "nl-BE", "nl"],["fr-FR", "French (France)", "fr-FR", "fr-FR", "fr"],["fr-CA", "French (Canada)", "fr-CA", "fr-CA", "fr"],["fr-CH", "French (Switzerland)", "fr-CH", "fr-CH", "fr"],["es-ES", "Spanish (Spain)", "es-ES", "es-ES", "es"],["es-MX", "Spanish (Mexico)", "es-MX", "es-MX", "es"],["es-US", "Spanish (United States)", "es-US", "es-US", "es"],["es-419", "Spanish (Latin America)", "es-419", "es-419", "es"],["es-AR", "Spanish (Argentina)", "es-AR", "es-AR", "es"],["es-CL", "Spanish (Chile)", "es-CL", "es-CL", "es"],["es-CO", "Spanish (Colombia)", "es-CO", "es-CO", "es"],["es-PE", "Spanish (Peru)", "es-PE", "es-PE", "es"],["es-VE", "Spanish (Venezuela)", "es-VE", "es-VE", "es"],["es-UY", "Spanish (Uruguay)", "es-UY", "es-UY", "es"],["es-EC", "Spanish (Ecuador)", "es-EC", "es-EC", "es"],["es-GT", "Spanish (Guatemala)", "es-GT", "es-GT", "es"],["es-HN", "Spanish (Honduras)", "es-HN", "es-HN", "es"],["es-NI", "Spanish (Nicaragua)", "es-NI", "es-NI", "es"],["es-PA", "Spanish (Panama)", "es-PA", "es-PA", "es"],["es-PY", "Spanish (Paraguay)", "es-PY", "es-PY", "es"],["es-PR", "Spanish (Puerto Rico)", "es-PR", "es-PR", "es"],["es-CR", "Spanish (Costa Rica)", "es-CR", "es-CR", "es"],["es-SV", "Spanish (El Salvador)", "es-SV", "es-SV", "es"],["es-HT", "Spanish (Haiti)", "es-HT", "es-HT", "es"],["pt-PT", "Portuguese (Portugal)", "pt-PT", "pt-PT", "pt"],["pt-BR", "Portuguese (Brazil)", "pt-BR", "pt-BR", "pt"],["zh-CN", "Chinese (China / Simplified)", "zh-CN", "zh-CN", "zh"],["zh-TW", "Chinese (Taiwan / Traditional)", "zh-TW", "zh-TW", "zh"],["zh-HK", "Chinese (Hong Kong)", "zh-HK", "zh-HK", "zh"],["zh-Hans", "Chinese (Simplified Script)", "zh-Hans", "zh-Hans", "zh"],["zh-Hant", "Chinese (Traditional Script)", "zh-Hant", "zh-Hant", "zh"],
             ["ar-SA", "Arabic (Saudi Arabia)", "ar-SA", "ar-SA", "ar"],["bn-IN", "Bengali (India)", "bn-IN", "bn-IN", "bn"],["pa-PK", "Punjabi (Pakistan)", "pa-PK", "pa-PK", "pa"],["bs-Cyrl", "Bosnian (Cyrillic)", "bs-Cyrl", "bs-Cyrl", ""],["ms-Arab", "Malay (Jawi)", "ms-Arab", "ms-Arab", "ms"],["pa-Arab", "Punjabi (Shahmukhi)", "pa-Arab", "pa-Arab", "pa"],["mni-Mtei", "Meiteilon (Manipuri, Meitei Mayek)", "mni-Mtei", "mni-Mtei", ""],["nb-NO", "Norwegian Bokmål (Norway)", "nb", "nb-NO", "no"]
         ];
 
@@ -1370,7 +1368,7 @@
                 opts.push(`<option value="${escapeHtml(id)}" data-translate="${escapeHtml(translate)}" data-speech="${escapeHtml(speech)}" data-se="${escapeHtml(se || "")}">${escapeHtml(label)}</option>`);
             }
             const basePairs = Object.entries(BASE_LANGS).sort((a, b) => a[1].localeCompare(b[1]));
-            for (const [code, name] of basePairs) {
+            for (const[code, name] of basePairs) {
                 if (!code) continue;
                 opts.push(`<option value="${escapeHtml(code)}" data-translate="${escapeHtml(code)}" data-speech="${escapeHtml(_dST(code))}" data-se="${escapeHtml(_dSE(code))}">${escapeHtml(name)} (${escapeHtml(code)})</option>`);
             }
