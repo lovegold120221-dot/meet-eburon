@@ -17,6 +17,7 @@ import { RoomState } from '@/lib/orbit/types';
 import { ChatPanel } from '@/lib/ChatPanel';
 import { ParticipantsPanel } from '@/lib/ParticipantsPanel';
 import { OrbitTranslatorVertical } from '@/lib/orbit/components/OrbitTranslatorVertical';
+import { OrbitTranslatorSidebar } from '@/lib/OrbitTranslatorSidebar';
 import { LiveCaptions } from '@/lib/LiveCaptions';
 import { CustomPreJoin } from '@/lib/CustomPreJoin';
 import { useDeepgramLive } from '@/lib/orbit/hooks/useDeepgramLive';
@@ -868,14 +869,9 @@ function VideoConferenceComponent(props: {
         );
       case 'orbit':
         return (
-          <OrbitTranslatorVertical
-            room={room}
-            roomCode={roomName}
-            userId={user?.id}
-            enabled={isTranscriptionEnabled}
-            language="en-US"
-            targetLanguage={targetLanguage}
-            onTranscriptSegment={handleTranscriptSegment}
+          <OrbitTranslatorSidebar
+            isOpen={!sidebarCollapsed && activeSidebarPanel === 'orbit'}
+            onClose={() => setSidebarCollapsed(true)}
           />
         );
       default:
