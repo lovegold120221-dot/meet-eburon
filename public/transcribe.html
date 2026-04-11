@@ -517,24 +517,23 @@
         <div class="control-group">
             <div class="row">
                 <div class="lang-field">
-                    <label>Room ID</label>
-                    <input type="text" id="roomIdInput" value="General">
+                    <label for="roomIdInput">Room ID</label>
+                    <input type="text" id="roomIdInput" value="General" aria-label="Room ID">
                 </div>
                 <div class="lang-field">
-                    <label>User ID</label>
-                    <input type="text" id="userIdInput" placeholder="Authenticating..." readonly>
+                    <label for="userIdInput">User ID</label>
+                    <input type="text" id="userIdInput" placeholder="Authenticating..." readonly aria-label="User ID">
                 </div>
             </div>
 
             <div class="row">
                 <div class="lang-field">
-                    <label>Translate From</label>
-                    <select id="srcLang"></select>
+                    <label for="srcLang">Translate From</label>
+                    <select id="srcLang" aria-label="Source Language"></select>
                 </div>
-
                 <div class="lang-field">
-                    <label>Translate To</label>
-                    <select id="tgtLang"></select>
+                    <label for="tgtLang">Translate To</label>
+                    <select id="tgtLang" aria-label="Target Language"></select>
                 </div>
             </div>
 
