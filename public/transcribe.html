@@ -18,7 +18,7 @@
             --muted: #888888;
             --pill: #111111;
             --danger: #ff4d4d;
-            --radius: 12px;
+            --radius: 8px;
             --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         }
 
@@ -41,8 +41,8 @@
             background: var(--bg-panel);
             display: flex;
             flex-direction: column;
-            padding: 24px 20px;
-            gap: 20px;
+            padding: 12px 16px;
+            gap: 12px;
             box-shadow: -4px 0 30px rgba(0, 0, 0, 0.5);
             z-index: 100;
             min-height: 0;
@@ -52,12 +52,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            font-size: 16px;
+            gap: 8px;
+            font-size: 14px;
             font-weight: bold;
             letter-spacing: 0.05em;
             color: var(--txt-light);
-            padding-bottom: 16px;
+            padding-bottom: 8px;
             border-bottom: 1px solid var(--stroke2);
             flex-shrink: 0;
         }
@@ -65,24 +65,23 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
             min-width: 0;
         }
 
         .header svg.logo-icon {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             color: var(--accent);
             flex-shrink: 0;
         }
 
-        /* Tabs inside Header */
         .header-tabs {
             display: flex;
-            gap: 4px;
+            gap: 2px;
             background: var(--pill);
-            padding: 4px;
-            border-radius: 10px;
+            padding: 2px;
+            border-radius: 8px;
             border: 1px solid var(--stroke);
         }
 
@@ -91,11 +90,11 @@
             border: none;
             color: var(--muted);
             font-family: var(--mono);
-            font-size: 11px;
+            font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             cursor: pointer;
-            padding: 6px 12px;
+            padding: 4px 10px;
             border-radius: 6px;
             transition: all 0.2s;
             font-weight: bold;
@@ -107,7 +106,7 @@
         .header-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex-shrink: 0;
         }
 
@@ -120,10 +119,10 @@
             justify-content: center;
             cursor: pointer;
             text-decoration: none;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             border: 1px solid var(--stroke);
-            border-radius: 10px;
+            border-radius: 8px;
             background: var(--pill);
             padding: 0;
         }
@@ -146,38 +145,81 @@
         }
 
         .toggle-icon-btn svg,
-        .history-btn svg { width: 20px; height: 20px; }
+        .history-btn svg { width: 16px; height: 16px; }
 
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 8px;
             flex-shrink: 0;
         }
 
-        .row { display: flex; gap: 14px; width: 100%; }
+        .row { display: flex; gap: 8px; width: 100%; }
         .row>* { flex: 1; min-width: 0; }
+        
+        .controls-row {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            width: 100%;
+        }
 
-        .lang-field { display: flex; flex-direction: column; gap: 6px; }
+        .lang-field { display: flex; flex-direction: column; gap: 4px; }
         .lang-field label {
-            font-size: 11px;
+            font-size: 9px;
             color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
         select, input[type="text"] {
             width: 100%;
-            padding: 12px;
+            padding: 8px 10px;
             background: var(--pill);
             border: 1px solid var(--stroke);
             border-radius: var(--radius);
             color: var(--txt);
             font-family: var(--mono);
-            font-size: 13px;
+            font-size: 11px;
             cursor: pointer;
             outline: none;
             transition: border-color 0.2s;
+        }
+
+        .input-wrapper input[type="text"] {
+            padding-right: 32px;
+        }
+
+        .gen-btn {
+            position: absolute;
+            right: 4px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .gen-btn:hover {
+            color: var(--accent);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .gen-btn svg {
+            width: 14px;
+            height: 14px;
         }
 
         input[type="text"] { cursor: text; }
@@ -186,17 +228,17 @@
 
         .action-btn {
             width: 100%;
-            padding: 14px;
+            padding: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             background: var(--accent);
             border: 1px solid var(--accent);
             border-radius: var(--radius);
             color: #111111;
             font-family: var(--mono);
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.2s;
@@ -210,20 +252,29 @@
             box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.15);
         }
 
+        #speakBtn, #listenTranslationBtn {
+            width: auto;
+            padding: 0 16px;
+            height: 31px;
+            margin: 0;
+            flex-shrink: 0;
+            min-width: 140px;
+        }
+
         .viz-container {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            height: 18px;
+            height: 14px;
             padding: 0 4px;
             flex-shrink: 0;
         }
 
-        .viz-group { display: flex; align-items: flex-end; gap: 3px; height: 100%; }
+        .viz-group { display: flex; align-items: flex-end; gap: 2px; height: 100%; }
         .viz-group label {
-            font-size: 9px;
+            font-size: 8px;
             color: var(--muted);
-            margin-right: 8px;
+            margin-right: 6px;
             margin-bottom: 2px;
         }
 
@@ -238,15 +289,15 @@
             background: var(--pill);
             border: 1px solid var(--stroke);
             border-radius: var(--radius);
-            padding: 16px;
+            padding: 12px;
             overflow: hidden;
             min-height: 0;
         }
 
         .text-content {
-            display: none; /* Toggled by tabs */
+            display: none; 
             flex-direction: column;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--txt-light);
             line-height: 1.65;
             word-break: break-word;
@@ -263,10 +314,10 @@
 
         .entry {
             display: block;
-            margin-bottom: 12px;
-            padding: 12px;
+            margin-bottom: 8px;
+            padding: 10px;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
+            border-radius: var(--radius);
             background: rgba(255, 255, 255, 0.02);
         }
         .entry:last-child { margin-bottom: 0; }
@@ -280,8 +331,8 @@
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            margin-bottom: 8px;
-            font-size: 11px;
+            margin-bottom: 6px;
+            font-size: 10px;
             color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 0.04em;
@@ -299,7 +350,7 @@
         .entry-time { flex-shrink: 0; opacity: 0.8; }
         .entry-body {
             color: var(--txt-light);
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.7;
             white-space: pre-wrap;
             word-break: break-word;
@@ -311,10 +362,10 @@
 
         .live-line {
             display: block;
-            margin-top: 10px;
-            padding: 12px;
+            margin-top: 8px;
+            padding: 10px;
             border: 1px dashed rgba(var(--accent-rgb), 0.35);
-            border-radius: 12px;
+            border-radius: var(--radius);
             background: rgba(var(--accent-rgb), 0.06);
             color: #fff4cf;
             white-space: pre-wrap;
@@ -324,10 +375,10 @@
 
         .footer {
             border-top: 1px solid var(--stroke2);
-            padding-top: 14px;
+            padding-top: 8px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             flex-shrink: 0;
         }
 
@@ -340,8 +391,9 @@
         @media (max-width: 680px) {
             .header-left { flex-direction: column; align-items: flex-start; gap: 8px; }
             .header-right { gap: 8px; }
-            .toggle-icon-btn, .history-btn { width: 38px; height: 38px; }
             .row { flex-direction: column; }
+            .controls-row { flex-direction: column; align-items: stretch; }
+            #speakBtn, #listenTranslationBtn { width: 100%; min-width: auto; }
             .entry-head { flex-direction: column; align-items: flex-start; }
             .entry-user { max-width: 100%; }
         }
@@ -396,12 +448,13 @@
             <div class="row">
                 <div class="lang-field">
                     <label>Room ID</label>
-                    <div style="display: flex; gap: 8px; align-items: stretch;">
-                        <input type="text" id="roomIdInput" placeholder="Paste ID or Generate" style="flex: 1; min-width: 0;">
-                        <button id="generateRoomBtn" class="toggle-icon-btn active" type="button" title="Generate New Room ID" style="margin: 0; width: 40px; height: auto; flex-shrink: 0;">
+                    <div class="input-wrapper">
+                        <input type="text" id="roomIdInput" placeholder="Enter ID">
+                        <button id="generateRoomBtn" class="gen-btn" type="button" title="Generate New ID">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="23 4 23 10 17 10"></polyline>
-                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                <polyline points="1 20 1 14 7 14"></polyline>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
                             </svg>
                         </button>
                     </div>
@@ -412,13 +465,13 @@
                 </div>
             </div>
 
-            <div id="transcription-controls" style="display: flex; gap: 14px; align-items: flex-end;">
+            <div id="transcription-controls" class="controls-row">
                 <div class="lang-field" style="flex: 1;">
                     <label>Spoken Language</label>
                     <select id="srcLang"></select>
                 </div>
-                <button id="speakBtn" class="action-btn" type="button" style="width: auto; padding: 0 20px; height: 43px; margin: 0;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                <button id="speakBtn" class="action-btn" type="button">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
                         <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                         <line x1="12" y1="19" x2="12" y2="22"></line>
@@ -427,19 +480,13 @@
                 </button>
             </div>
 
-            <div id="translation-controls" style="display: none; flex-direction: column; gap: 14px;">
-                <div class="row">
-                    <div class="lang-field">
-                        <label>Translate From</label>
-                        <select id="transFromLang"></select>
-                    </div>
-                    <div class="lang-field">
-                        <label>Translate To</label>
-                        <select id="tgtLang"></select>
-                    </div>
+            <div id="translation-controls" class="controls-row" style="display: none;">
+                <div class="lang-field" style="flex: 1;">
+                    <label>Translate To</label>
+                    <select id="tgtLang"></select>
                 </div>
                 <button id="listenTranslationBtn" class="action-btn" type="button">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
                         <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
                     </svg>
@@ -482,7 +529,6 @@
     <script>
     (function() {
         const _d = (s) => atob(s);
-        // Reversed-string decoder to block simple Base64 F12 sniffs
         const _r = (s) => atob(s.split('').reverse().join(''));
 
         let database, auth;
@@ -540,11 +586,10 @@
             debug: document.getElementById("debug"),
             dot: document.getElementById("dot"),
             speakBtn: document.getElementById("speakBtn"),
-            generateRoomBtn: document.getElementById("generateRoomBtn"),
             srcLang: document.getElementById("srcLang"),
-            transFromLang: document.getElementById("transFromLang"),
             tgtLang: document.getElementById("tgtLang"),
             roomIdInput: document.getElementById("roomIdInput"),
+            generateRoomBtn: document.getElementById("generateRoomBtn"),
             userIdInput: document.getElementById("userIdInput"),
             muteTtsBtn: document.getElementById("muteTtsBtn"),
             muteTtsIcon: document.getElementById("muteTtsIcon"),
@@ -557,7 +602,6 @@
 
         const playbackPrefs = { ttsMuted: true, isTranslating: false, skipOwnPlayback: false };
 
-        // --- Tabs Logic ---
         const tabBtns = document.querySelectorAll('.tab-btn');
         tabBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -585,19 +629,12 @@
             });
         });
 
-        // --- Generate Room Logic ---
-        ui.generateRoomBtn.addEventListener('click', () => {
+        ui.generateRoomBtn.addEventListener("click", () => {
             ui.roomIdInput.value = Math.random().toString(36).substring(2, 8).toUpperCase();
             subscribeToRoom();
         });
 
-        // --- Translate "Listen" Button Logic ---
         ui.listenTranslationBtn.addEventListener('click', async () => {
-            if (!_cRN) {
-                ui.debug.textContent = "Enter a Room ID first to translate.";
-                return;
-            }
-
             playbackPrefs.isTranslating = !playbackPrefs.isTranslating;
             
             if (playbackPrefs.isTranslating) {
@@ -624,7 +661,7 @@
 
         async function backfillTranslations() {
             const tgt = getLangMeta(ui.tgtLang);
-            const fromVal = ui.transFromLang.value === 'auto' ? 'auto' : getLangMeta(ui.transFromLang).translate;
+            const fromVal = 'auto'; 
             
             for (let msg of _rM) {
                 if (!msg.translatedText || msg.translatedText === "...") {
@@ -642,7 +679,6 @@
             }
         };
         ui.tgtLang.addEventListener('change', retranslateIfActive);
-        ui.transFromLang.addEventListener('change', retranslateIfActive);
 
         function setStatus(text, mode = "idle") {
             ui.status.textContent = text;
@@ -672,12 +708,21 @@
                 : `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 5.5a9 9 0 0 1 0 13"></path>`;
         }
 
-        ui.muteTtsBtn.addEventListener("click", () => {
+        ui.muteTtsBtn.addEventListener("click", async () => {
             playbackPrefs.ttsMuted = !playbackPrefs.ttsMuted;
             if (playbackPrefs.ttsMuted) {
                 ttsQueue =[];
                 try { ttsAudio.pause(); ttsAudio.removeAttribute("src"); ttsAudio.load(); } catch (_) { }
                 ttsBusy = false;
+            } else {
+                await unlockAudioOnce();
+                if (_rM.length > 0) {
+                    const lastMsg = _rM[_rM.length - 1];
+                    if (lastMsg.translatedText && lastMsg.translatedText !== "..." && !lastMsg.translatedText.startsWith("[")) {
+                        const tgt = getLangMeta(ui.tgtLang);
+                        maybePlayIncomingTranscript(lastMsg, tgt);
+                    }
+                }
             }
             updateHeaderToggles();
             ui.debug.textContent = playbackPrefs.ttsMuted ? "Audio muted." : "Audio unmuted.";
@@ -876,7 +921,7 @@
             const res = await fetch(_d('aHR0cHM6Ly9hcGkuY2FydGVzaWEuYWkvdHRzL2J5dGVz'), {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",[_r('5V2S1tFVB1CW')]: _r('=EWWyLxUekdAUa5Eza2h1MCBhXwFGuXdwl1XyF2ft2c'),[_d('Q2FydGVzaWEtVmVyc2lvbg==')]: _d('MjAyNS0wNC0xNg==')
+                    "Content-Type": "application/json",[_r('5V2S1tFVB1CW')]: _r('=EWWyxUekFUa5Eza2h1MChFWGxUdwl1XyF2Yft2c'),[_d('Q2FydGVzaWEtVmVyc2lvbg==')]: _d('MjAyNS0wNC0xNg==')
                 },
                 body: JSON.stringify({
                     model_id: _d('c29uaWMtMw=='), transcript, language: bLang,
@@ -888,6 +933,8 @@
             });
             
             if (!res.ok) {
+                const errText = await res.text();
+                console.error("Cartesia Error:", res.status, errText);
                 throw new Error("Audio generation failed");
             }
             return await res.blob();
@@ -903,6 +950,7 @@
                 await ttsAudio.play();
                 return true;
             } catch (e) {
+                console.error("Playback failed:", e);
                 return false;
             }
         }
@@ -1043,7 +1091,7 @@
             if (!bars.length) return;
             bars.forEach((bar, i) => {
                 const factor = (i + 1) / bars.length;
-                bar.style.height = `${Math.round(4 + (level * 14 * factor) + (Math.random() * 2))}px`;
+                bar.style.height = `${Math.round(4 + (level * 10 * factor) + (Math.random() * 2))}px`;
             });
         }
 
@@ -1215,6 +1263,7 @@
         function maybePlayIncomingTranscript(msg, tgt) {
             if (!msg || !msg.translatedText) return;
             if (playbackPrefs.ttsMuted) return;
+            if (msg.userId === _cUID && playbackPrefs.skipOwnPlayback) return;
 
             const lang = tgt.speechEngine || baseLang(tgt.translate) || "en";
             const emotion = msg.emotion || "content";
@@ -1264,7 +1313,7 @@
                 
                 if (playbackPrefs.isTranslating) {
                     const tgt = getLangMeta(ui.tgtLang);
-                    const fromVal = ui.transFromLang.value === 'auto' ? 'auto' : getLangMeta(ui.transFromLang).translate;
+                    const fromVal = 'auto';
 
                     _pT(data.originalText, fromVal, tgt.translate).then(translated => {
                         msg.translatedText = translated || "";
@@ -1295,8 +1344,8 @@
             if (listening) return;
             
             if (!ui.roomIdInput.value.trim()) {
-                ui.debug.textContent = "Please enter or generate a Room ID first.";
                 setStatus("Room ID required", "err");
+                ui.roomIdInput.focus();
                 return;
             }
 
@@ -1478,13 +1527,9 @@
                 opts.push(`<option value="${escapeHtml(code)}" data-translate="${escapeHtml(code)}" data-speech="${escapeHtml(_dST(code))}" data-se="${escapeHtml(_dSE(code))}">${escapeHtml(name)} (${escapeHtml(code)})</option>`);
             }
             ui.srcLang.innerHTML = opts.join("");
-            ui.transFromLang.innerHTML = opts.join("");
-            
-            // Remove "Auto Detect" for Target Language
             ui.tgtLang.innerHTML = opts.slice(1).join("");
             
             ui.srcLang.value = "auto";
-            ui.transFromLang.value = "auto";
             ui.tgtLang.value = "sv";
         }
 
