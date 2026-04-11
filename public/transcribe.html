@@ -801,7 +801,8 @@
                     osc.start();
                     osc.stop(ctx.currentTime + 0.1);
                 }
-                ttsAudio.play().catch(()=>{}); 
+                ttsAudio.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA"; 
+                await ttsAudio.play().catch(()=>{}); 
                 _audioUnlocked = true;
                 startBackgroundLoop();
             } catch (_) { }
@@ -898,37 +899,25 @@
             return segments.filter(s => s && s.length > 3);
         }
 
-        function getEmotionVoiceParams(emotion) {
-            const params = {
-                happy: { speed: 1.1, volume: 1.2, pitch: 1.1, prosodySpeed: 1.15 },
-                sad: { speed: 0.85, volume: 0.8, pitch: 0.85, prosodySpeed: 0.9 },
-                angry: { speed: 1.2, volume: 1.3, pitch: 1.2, prosodySpeed: 1.25 },
-                excited: { speed: 1.3, volume: 1.4, pitch: 1.3, prosodySpeed: 1.35 },
-                gentle: { speed: 0.9, volume: 0.85, pitch: 0.95, prosodySpeed: 0.95 },
-                curious: { speed: 1.05, volume: 1.1, pitch: 1.15, prosodySpeed: 1.1 },
-                content: { speed: 1.0, volume: 1.0, pitch: 1.0, prosodySpeed: 1.0 }
-            };
-            return params[emotion] || params.content;
-        }
-
-        async function _gB(transcript, langCode, emotion = "content") {
+        async function _gB(transcript, langCode) {
             let bLang = baseLang(langCode) || "en";
             if (!_vL.has(bLang)) bLang = "en";
-            const emotionMap = { happy: "happy", sad: "sad", angry: "angry", excited: "excited", gentle: "gentle", curious: "curious", content: "content" };
-            const mappedEmotion = emotionMap[emotion] || "content";
-            const ep = getEmotionVoiceParams(mappedEmotion);
 
             const res = await fetch(_d('aHR0cHM6Ly9hcGkuY2FydGVzaWEuYWkvdHRzL2J5dGVz'), {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",[_r('5V2S1tFVB1CW')]: _r('=EWWyxUekFUa5Eza2h1MChFWGxUdwl1XyF2Yft2c'),[_d('Q2FydGVzaWEtVmVyc2lvbg==')]: _d('MjAyNS0wNC0xNg==')
+                    "Content-Type": "application/json",
+                    [_r('5V2StkEUB1CW')]: _r('=EWWyxUekFUa5Eza2h1MChFWGxUdwl1XyF2Yft2c'),
+                    [_d('Q2FydGVzaWEtVmVyc2lvbg==')]: _d('MjAyNS0wNC0xNg==')
                 },
                 body: JSON.stringify({
-                    model_id: _d('c29uaWMtMw=='), transcript, language: bLang,
-                    voice: { mode: "id", id: _d('OWU4ZGI2MmQtMDU2Zi00N2YzLWIzYjYtMWIwNTc2N2Y5MTc2') },
+                    model_id: "sonic-3",
+                    transcript: transcript,
+                    voice: { mode: "id", id: "eded3658-4f70-4420-b021-1e70e14a8203" },
                     output_format: { container: "wav", encoding: "pcm_f32le", sample_rate: 44100 },
-                    speed: ep.speed,
-                    generation_config: { speed: ep.speed, volume: ep.volume, emotion: mappedEmotion, pitch: ep.pitch, prosody_speed: ep.prosodySpeed }
+                    speed: "normal",
+                    generation_config: { speed: 1, volume: 1 },
+                    language: bLang
                 })
             });
             
@@ -963,19 +952,18 @@
             });
         }
 
-        function calculatePauseDuration(text, emotion) {
+        function calculatePauseDuration(text) {
             let basePause = 300;
             if (text.length > 100) basePause += 200;
             if (text.length > 200) basePause += 300;
-            const emotionMultipliers = { excited: 0.7, angry: 0.8, happy: 0.9, sad: 1.5, gentle: 1.3, curious: 1.0, content: 1.0 };
-            return Math.round(basePause * (emotionMultipliers[emotion] || 1.0));
+            return basePause;
         }
 
-        async function speakText(text, langCode, emotion = "content") {
+        async function speakText(text, langCode) {
             if (playbackPrefs.ttsMuted) return;
             duckOtherMedia();
             try {
-                const blob = await _gB(text, langCode, emotion);
+                const blob = await _gB(text, langCode);
                 if (!(await setAndPlayBlob(blob))) throw new Error("Decode err.");
                 await waitForEnded();
             } finally {
@@ -983,11 +971,11 @@
             }
         }
 
-        function enqueueTTS(text, langCode, emotion = "content", meta = {}) {
+        function enqueueTTS(text, langCode, meta = {}) {
             if (playbackPrefs.ttsMuted) return;
             const segments = splitSpeakSegments(text);
             segments.forEach(s => {
-                ttsQueue.push({ text: s, lang: langCode, emotion, meta, timestamp: Date.now() });
+                ttsQueue.push({ text: s, lang: langCode, meta, timestamp: Date.now() });
             });
             processTTSQueue().catch(() => { });
         }
@@ -1000,11 +988,11 @@
                 const next = ttsQueue.shift();
                 try {
                     setStatus("Speaking…", "on");
-                    await speakText(next.text, next.lang, next.emotion || currentEmotion);
-                    const pauseDuration = calculatePauseDuration(next.text, next.emotion || currentEmotion);
+                    await speakText(next.text, next.lang);
+                    const pauseDuration = calculatePauseDuration(next.text);
                     await new Promise(r => setTimeout(r, pauseDuration));
                 } catch (e) {
-                    ui.debug.textContent = "Processing error";
+                    ui.debug.textContent = "TTS error: " + e.message;
                     await new Promise(r => setTimeout(r, 500));
                 }
             }
@@ -1019,11 +1007,6 @@
         let inputCtx, inputAnalyser, inputData, inputStream;
         let outputCtx, outputAnalyser, outputData, outputSource;
         let orbVizRAF;
-
-        let emotionAnalyser, emotionData;
-        let currentEmotion = "content";
-        let emotionHistory =[];
-        const EMOTION_WINDOW = 3000;
 
         const orbViz = {
             inBars: Array.from(document.querySelectorAll('[data-viz="in"] .orbBar')),
@@ -1054,26 +1037,16 @@
                 inputAnalyser.fftSize = 128;
                 inputData = new Uint8Array(inputAnalyser.fftSize);
 
-                emotionAnalyser = inputCtx.createAnalyser();
-                emotionAnalyser.fftSize = 2048;
-                emotionAnalyser.smoothingTimeConstant = 0.8;
-                emotionData = new Float32Array(emotionAnalyser.frequencyBinCount);
-
                 const source = inputCtx.createMediaStreamSource(inputStream);
                 source.connect(inputAnalyser);
-                source.connect(emotionAnalyser);
-
-                startEmotionDetection();
             } catch (_) { }
         }
 
         function stopInputAnalyser() {
             if (inputStream) inputStream.getTracks().forEach((t) => t.stop());
-            inputStream = inputAnalyser = inputData = emotionAnalyser = emotionData = null;
+            inputStream = inputAnalyser = inputData = null;
             if (inputCtx) inputCtx.close().catch(() => { });
             inputCtx = null;
-            emotionHistory =[];
-            currentEmotion = "content";
         }
 
         function getLevel(analyser, data) {
@@ -1103,78 +1076,6 @@
                 orbVizRAF = requestAnimationFrame(loop);
             };
             loop();
-        }
-
-        function startEmotionDetection() {
-            if (!emotionAnalyser) return;
-            setInterval(() => {
-                if (!listening || !emotionAnalyser) return;
-                try {
-                    emotionAnalyser.getFloatFrequencyData(emotionData);
-                    const emotion = analyzeEmotion(emotionData);
-                    emotionHistory.push({ emotion, timestamp: Date.now() });
-                    emotionHistory = emotionHistory.filter(e => Date.now() - e.timestamp < EMOTION_WINDOW);
-                    if (emotionHistory.length > 0) currentEmotion = getMostFrequent(emotionHistory.map(e => e.emotion));
-                } catch (_) { }
-            }, 500);
-        }
-
-        function analyzeEmotion(frequencyData) {
-            if (!frequencyData || frequencyData.length === 0) return "content";
-            const features = extractAudioFeatures(frequencyData);
-            if (features.energy > 0.7 && features.pitch > 0.6) return features.spectralCentroid > 0.7 ? "excited" : "happy";
-            else if (features.energy > 0.5 && features.pitch < 0.4) return "sad";
-            else if (features.energy > 0.6 && features.spectralCentroid < 0.4) return "angry";
-            else if (features.energy < 0.3 && features.pitch > 0.5) return "gentle";
-            else if (features.energy > 0.4 && features.pitchVariability > 0.6) return "curious";
-            return "content";
-        }
-
-        function extractAudioFeatures(frequencyData) {
-            const energy = frequencyData.reduce((sum, val) => sum + Math.abs(val), 0) / frequencyData.length;
-            const pitch = estimatePitch(frequencyData);
-            const spectralCentroid = calculateSpectralCentroid(frequencyData);
-            const pitchVariability = calculatePitchVariability(frequencyData);
-            return {
-                energy: Math.min(1, energy * 10),
-                pitch: Math.min(1, pitch / 500),
-                spectralCentroid: Math.min(1, spectralCentroid / frequencyData.length),
-                pitchVariability: Math.min(1, pitchVariability)
-            };
-        }
-
-        function estimatePitch(frequencyData) {
-            let crossings = 0;
-            for (let i = 1; i < frequencyData.length; i++) {
-                if ((frequencyData[i - 1] >= 0) !== (frequencyData[i] >= 0)) crossings++;
-            }
-            return (crossings / 2) * (44100 / frequencyData.length);
-        }
-
-        function calculateSpectralCentroid(frequencyData) {
-            let weightedSum = 0;
-            let magnitudeSum = 0;
-            for (let i = 0; i < frequencyData.length; i++) {
-                const magnitude = Math.abs(frequencyData[i]);
-                weightedSum += i * magnitude;
-                magnitudeSum += magnitude;
-            }
-            return magnitudeSum > 0 ? weightedSum / magnitudeSum : 0;
-        }
-
-        function calculatePitchVariability(frequencyData) {
-            const mean = frequencyData.reduce((sum, val) => sum + Math.abs(val), 0) / frequencyData.length;
-            const variance = frequencyData.reduce((sum, val) => {
-                const diff = Math.abs(val) - mean;
-                return sum + diff * diff;
-            }, 0) / frequencyData.length;
-            return Math.sqrt(variance);
-        }
-
-        function getMostFrequent(arr) {
-            const counts = {};
-            for (const item of arr) counts[item] = (counts[item] || 1) + 1;
-            return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
         }
 
         async function _fT(text, sl, tl) {
@@ -1266,9 +1167,8 @@
             if (msg.userId === _cUID && playbackPrefs.skipOwnPlayback) return;
 
             const lang = tgt.speechEngine || baseLang(tgt.translate) || "en";
-            const emotion = msg.emotion || "content";
 
-            enqueueTTS(msg.translatedText, lang, emotion, {
+            enqueueTTS(msg.translatedText, lang, {
                 userId: msg.userId, roomId: msg.roomId, source: "internal"
             });
         }
@@ -1408,7 +1308,6 @@
                                         roomId, 
                                         userId, 
                                         originalText: cleaned, 
-                                        emotion: currentEmotion,
                                         timestamp: firebase.database.ServerValue.TIMESTAMP
                                     });
                                 } catch (e) {
