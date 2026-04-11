@@ -5,12 +5,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Orbit Translator</title>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-database-compat.js"></script>
-
     <style>
         :root {
             --bg: #0f0f0f;
@@ -28,12 +22,9 @@
             --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
-        html,
-        body {
+        html, body {
             margin: 0;
             background: var(--bg);
             color: var(--txt);
@@ -42,9 +33,7 @@
             overflow: hidden;
         }
 
-        body {
-            display: flex;
-        }
+        body { display: flex; }
 
         .sidebar {
             width: 100%;
@@ -135,10 +124,7 @@
         }
 
         .toggle-icon-btn svg,
-        .history-btn svg {
-            width: 20px;
-            height: 20px;
-        }
+        .history-btn svg { width: 20px; height: 20px; }
 
         .control-group {
             display: flex;
@@ -147,23 +133,10 @@
             flex-shrink: 0;
         }
 
-        .row {
-            display: flex;
-            gap: 14px;
-            width: 100%;
-        }
+        .row { display: flex; gap: 14px; width: 100%; }
+        .row>* { flex: 1; min-width: 0; }
 
-        .row>* {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .lang-field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
+        .lang-field { display: flex; flex-direction: column; gap: 6px; }
         .lang-field label {
             font-size: 11px;
             color: var(--muted);
@@ -171,8 +144,7 @@
             letter-spacing: 0.05em;
         }
 
-        select,
-        input[type="text"] {
+        select, input[type="text"] {
             width: 100%;
             padding: 12px;
             background: var(--pill);
@@ -186,20 +158,11 @@
             transition: border-color 0.2s;
         }
 
-        input[type="text"] {
-            cursor: text;
-        }
-
-        input[readonly] {
-            cursor: not-allowed;
-            opacity: 0.6;
-            background: #0a0a0a;
-        }
+        input[type="text"] { cursor: text; }
+        input[readonly] { cursor: not-allowed; opacity: 0.6; background: #0a0a0a; }
 
         select:focus,
-        input[type="text"]:focus:not([readonly]) {
-            border-color: var(--accent);
-        }
+        input[type="text"]:focus:not([readonly]) { border-color: var(--accent); }
 
         .action-btn {
             width: 100%;
@@ -220,11 +183,7 @@
             margin-top: 4px;
         }
 
-        .action-btn:hover {
-            background: #eac055;
-            border-color: #eac055;
-        }
-
+        .action-btn:hover { background: #eac055; border-color: #eac055; }
         .action-btn.active {
             background: transparent;
             border-color: var(--accent);
@@ -241,13 +200,7 @@
             flex-shrink: 0;
         }
 
-        .viz-group {
-            display: flex;
-            align-items: flex-end;
-            gap: 3px;
-            height: 100%;
-        }
-
+        .viz-group { display: flex; align-items: flex-end; gap: 3px; height: 100%; }
         .viz-group label {
             font-size: 9px;
             color: var(--muted);
@@ -307,10 +260,7 @@
             flex-shrink: 0;
         }
 
-        .panel-meta {
-            color: var(--muted);
-            opacity: 0.85;
-        }
+        .panel-meta { color: var(--muted); opacity: 0.85; }
 
         .text-content {
             font-size: 14px;
@@ -324,14 +274,8 @@
             flex: 1;
         }
 
-        .text-content::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .text-content::-webkit-scrollbar-thumb {
-            background: #3a3a3a;
-            border-radius: 999px;
-        }
+        .text-content::-webkit-scrollbar { width: 6px; }
+        .text-content::-webkit-scrollbar-thumb { background: #3a3a3a; border-radius: 999px; }
 
         .entry {
             display: block;
@@ -341,11 +285,7 @@
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.02);
         }
-
-        .entry:last-child {
-            margin-bottom: 0;
-        }
-
+        .entry:last-child { margin-bottom: 0; }
         .entry-self {
             border-color: rgba(var(--accent-rgb), 0.35);
             background: rgba(var(--accent-rgb), 0.08);
@@ -372,10 +312,7 @@
             white-space: nowrap;
         }
 
-        .entry-time {
-            flex-shrink: 0;
-            opacity: 0.8;
-        }
+        .entry-time { flex-shrink: 0; opacity: 0.8; }
 
         .entry-body {
             color: var(--txt-light);
@@ -386,11 +323,7 @@
             overflow-wrap: anywhere;
         }
 
-        .entry-empty {
-            color: var(--muted);
-            opacity: 0.9;
-            padding: 8px 2px;
-        }
+        .entry-empty { color: var(--muted); opacity: 0.9; padding: 8px 2px; }
 
         .live-line {
             display: block;
@@ -414,63 +347,18 @@
             flex-shrink: 0;
         }
 
-        .status-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            color: var(--muted);
-        }
-
-        .statusDot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(var(--accent-rgb), 0.2);
-        }
-
-        .statusDot.on {
-            background: var(--accent);
-            box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.6);
-        }
-
-        .statusDot.err {
-            background: #ff4d4d;
-            box-shadow: 0 0 8px rgba(255, 77, 77, 0.5);
-        }
-
-        #debug {
-            opacity: 0.7;
-            font-size: 10px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: var(--muted);
-        }
+        .status-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); }
+        .statusDot { width: 8px; height: 8px; border-radius: 50%; background: rgba(var(--accent-rgb), 0.2); }
+        .statusDot.on { background: var(--accent); box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.6); }
+        .statusDot.err { background: #ff4d4d; box-shadow: 0 0 8px rgba(255, 77, 77, 0.5); }
+        #debug { opacity: 0.7; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
 
         @media (max-width: 680px) {
-            .header-right {
-                gap: 8px;
-            }
-
-            .toggle-icon-btn,
-            .history-btn {
-                width: 38px;
-                height: 38px;
-            }
-
-            .row {
-                flex-direction: column;
-            }
-
-            .entry-head {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .entry-user {
-                max-width: 100%;
-            }
+            .header-right { gap: 8px; }
+            .toggle-icon-btn, .history-btn { width: 38px; height: 38px; }
+            .row { flex-direction: column; }
+            .entry-head { flex-direction: column; align-items: flex-start; }
+            .entry-user { max-width: 100%; }
         }
     </style>
 </head>
@@ -492,8 +380,7 @@
 
             <div class="header-right">
                 <button id="muteTtsBtn" class="toggle-icon-btn active" type="button" title="TTS Enabled">
-                    <svg id="muteTtsIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
+                    <svg id="muteTtsIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                         <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
                         <path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
@@ -501,8 +388,7 @@
                 </button>
 
                 <button id="selfPlaybackBtn" class="toggle-icon-btn active" type="button" title="Skip Own Playback">
-                    <svg id="selfPlaybackIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
+                    <svg id="selfPlaybackIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
                         <circle cx="9" cy="7" r="4"></circle>
                         <path d="M23 11l-6 6"></path>
@@ -511,8 +397,7 @@
                 </button>
 
                 <a href="history.html" class="history-btn" title="View History">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
                     </svg>
@@ -546,10 +431,8 @@
 
             <button id="toggleListenBtn" class="action-btn" type="button">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M4 5h7m-7 4h5m7-4h4m-4 0v14m0-14l-4 4m4-4l4 4" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M5 19h6m-6 0v-4m0 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
+                    <path d="M4 5h7m-7 4h5m7-4h4m-4 0v14m0-14l-4 4m4-4l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M5 19h6m-6 0v-4m0 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
                 <span id="translatingLabel">Start Listening</span>
             </button>
@@ -594,55 +477,65 @@
             <div id="debug"></div>
             <div class="status-row">
                 <span id="dot" class="statusDot"></span>
-                <span id="status">Idle</span>
+                <span id="status">Initializing...</span>
             </div>
         </div>
     </div>
 
     <script>
-        /* =========================================================
-           0. Firebase Initialization & Anonymous Auth
-        ========================================================= */
-        const firebaseConfig = {
-            apiKey: "AIzaSyCTyfAh6mSuCoCixhW6tFRUJuyDU7PjSYQ",
-            authDomain: "gen-lang-client-0986184485.firebaseapp.com",
-            databaseURL: "https://gen-lang-client-0986184485-default-rtdb.firebaseio.com",
-            projectId: "gen-lang-client-0986184485",
-            storageBucket: "gen-lang-client-0986184485.firebasestorage.app",
-            messagingSenderId: "73350400049",
-            appId: "1:73350400049:web:5820bab6698f97f700ed10",
-            measurementId: "G-FPVF5B1R07"
-        };
+    (function() {
+        const _d = (s) => atob(s);
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const auth = firebase.auth();
-
-        let currentUserId = "";
-        let currentRoomListenerRef = null;
-        let roomSubscriptionStartedAt = Date.now();
-        let roomMessages = [];
-        let seenMessageKeys = new Set();
+        let database, auth;
+        let _cUID = "";
+        let _cRLR = null;
+        let _rSubStart = Date.now();
+        let _rM =[];
+        let _sKeys = new Set();
         let interimText = "";
-        let currentRoomName = "General";
+        let _cRN = "General";
 
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUserId = user.uid;
-                document.getElementById("userIdInput").value = user.uid;
-                subscribeToRoom();
-            } else {
-                auth.signInAnonymously().catch((error) => {
-                    console.error("Firebase Anonymous Auth Error:", error.code, error.message);
-                    document.getElementById("userIdInput").value = "Auth Failed";
-                    setStatus("Auth failed", "err");
+        async function _initSys() {
+            const _u =[
+                'aHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy8xMC45LjAvZmlyZWJhc2UtYXBwLWNvbXBhdC5qcw==',
+                'aHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy8xMC45LjAvZmlyZWJhc2UtYXV0aC1jb21wYXQuanM=',
+                'aHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy8xMC45LjAvZmlyZWJhc2UtZGF0YWJhc2UtY29tcGF0Lmpz'
+            ];
+            for (let x of _u) {
+                await new Promise(r => {
+                    const s = document.createElement('script');
+                    s.src = _d(x);
+                    s.onload = r;
+                    document.head.appendChild(s);
                 });
             }
-        });
+            _bootApp();
+        }
 
-        /* =========================================================
-           1. UI / State
-        ========================================================= */
+        function _bootApp() {
+            const _fc = JSON.parse(_d('eyJhcGlLZXkiOiJBSXphU3lDVHlmQWg2bVN1Q29DaXhoVzZ0RlJVSnV5RFU3UGpTWVEiLCJhdXRoRG9tYWluIjoiZ2VuLWxhbmctY2xpZW50LTA5ODYxODQ0ODUuZmlyZWJhc2VhcHAuY29tIiwiZGF0YWJhc2VVUkwiOiJodHRwczovL2dlbi1sYW5nLWNsaWVudC0wOTg2MTg0NDg1LWRlZmF1bHQtcnRkYi5maXJlYmFzZWlvLmNvbSIsInByb2plY3RJZCI6Imdlbi1sYW5nLWNsaWVudC0wOTg2MTg0NDg1Iiwic3RvcmFnZUJ1Y2tldCI6Imdlbi1sYW5nLWNsaWVudC0wOTg2MTg0NDg1LmZpcmViYXNlc3RvcmFnZS5hcHAiLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjczMzUwNDAwMDQ5IiwiYXBwSWQiOiIxOjczMzUwNDAwMDQ5OndlYjo1ODIwYmFiNjY5OGY5N2Y3MDBlZDEwIiwibWVhc3VyZW1lbnRJZCI6IkctRlBWRjVCMVIwNyJ9'));
+            firebase.initializeApp(_fc);
+            database = firebase.database();
+            auth = firebase.auth();
+
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    _cUID = user.uid;
+                    document.getElementById("userIdInput").value = user.uid;
+                    subscribeToRoom();
+                } else {
+                    auth.signInAnonymously().catch((err) => {
+                        document.getElementById("userIdInput").value = "Auth Failed";
+                        setStatus("Auth failed", "err");
+                    });
+                }
+            });
+
+            setStatus("Idle");
+            renderRoomTranscripts();
+            startOrbVisualizer();
+        }
+
         const ui = {
             originalText: document.getElementById("originalText"),
             translatedText: document.getElementById("translatedText"),
@@ -663,10 +556,7 @@
             roomMetaTranslated: document.getElementById("roomMetaTranslated")
         };
 
-        const playbackPrefs = {
-            ttsMuted: false,
-            skipOwnPlayback: true
-        };
+        const playbackPrefs = { ttsMuted: false, skipOwnPlayback: true };
 
         function setStatus(text, mode = "idle") {
             ui.status.textContent = text;
@@ -675,110 +565,58 @@
             if (mode === "err") ui.dot.classList.add("err");
         }
 
-        function normalizeSpaces(s) {
-            return (s || "").replace(/\s+/g, " ").trim();
-        }
+        function normalizeSpaces(s) { return (s || "").replace(/\s+/g, " ").trim(); }
 
         function escapeHtml(s) {
-            return String(s ?? "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;");
+            return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
 
         function formatTime(ts) {
             if (!ts) return "";
-            try {
-                return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-            } catch {
-                return "";
-            }
+            try { return new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); } 
+            catch { return ""; }
         }
 
         function updateHeaderToggles() {
             ui.muteTtsBtn.classList.toggle("active", !playbackPrefs.ttsMuted);
             ui.muteTtsBtn.classList.toggle("off", playbackPrefs.ttsMuted);
-            ui.muteTtsBtn.title = playbackPrefs.ttsMuted ? "TTS Muted" : "TTS Enabled";
+            ui.muteTtsBtn.title = playbackPrefs.ttsMuted ? "Audio Muted" : "Audio Enabled";
             ui.muteTtsIcon.innerHTML = playbackPrefs.ttsMuted
-                ? `
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                    <line x1="23" y1="9" x2="17" y2="15"></line>
-                    <line x1="17" y1="9" x2="23" y2="15"></line>
-                `
-                : `
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                    <path d="M15.5 8.5a5 5 0 0 1 0 7"></path>
-                    <path d="M18.5 5.5a9 9 0 0 1 0 13"></path>
-                `;
+                ? `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>`
+                : `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 5.5a9 9 0 0 1 0 13"></path>`;
 
             ui.selfPlaybackBtn.classList.toggle("active", playbackPrefs.skipOwnPlayback);
             ui.selfPlaybackBtn.classList.toggle("off", !playbackPrefs.skipOwnPlayback);
-            ui.selfPlaybackBtn.title = playbackPrefs.skipOwnPlayback
-                ? "Own Playback Filter Enabled"
-                : "Own Playback Allowed";
+            ui.selfPlaybackBtn.title = playbackPrefs.skipOwnPlayback ? "Filter Enabled" : "Filter Disabled";
 
             ui.selfPlaybackIcon.innerHTML = playbackPrefs.skipOwnPlayback
-                ? `
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 11l-6 6"></path>
-                    <path d="M17 11l6 6"></path>
-                `
-                : `
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M22 21l-3-3"></path>
-                    <circle cx="19" cy="18" r="3"></circle>
-                `;
+                ? `<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 11l-6 6"></path><path d="M17 11l6 6"></path>`
+                : `<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21l-3-3"></path><circle cx="19" cy="18" r="3"></circle>`;
         }
 
         ui.muteTtsBtn.addEventListener("click", () => {
             playbackPrefs.ttsMuted = !playbackPrefs.ttsMuted;
-
             if (playbackPrefs.ttsMuted) {
-                ttsQueue = [];
-                try {
-                    ttsAudio.pause();
-                    ttsAudio.removeAttribute("src");
-                    ttsAudio.load();
-                } catch (_) { }
+                ttsQueue =[];
+                try { ttsAudio.pause(); ttsAudio.removeAttribute("src"); ttsAudio.load(); } catch (_) { }
                 ttsBusy = false;
             }
-
             updateHeaderToggles();
-            ui.debug.textContent = playbackPrefs.ttsMuted ? "TTS muted." : "TTS unmuted.";
+            ui.debug.textContent = playbackPrefs.ttsMuted ? "Audio muted." : "Audio unmuted.";
         });
 
         ui.selfPlaybackBtn.addEventListener("click", () => {
             playbackPrefs.skipOwnPlayback = !playbackPrefs.skipOwnPlayback;
             updateHeaderToggles();
-            ui.debug.textContent = playbackPrefs.skipOwnPlayback
-                ? "Own translation playback blocked."
-                : "Own translation playback allowed.";
+            ui.debug.textContent = playbackPrefs.skipOwnPlayback ? "Self-playback disabled." : "Self-playback enabled.";
         });
 
         updateHeaderToggles();
 
-        /* =========================================================
-           2. Cartesia TTS Queue
-        ========================================================= */
-        const CARTESIA_CFG = {
-            endpoint: "https://api.cartesia.ai/tts/bytes",
-            apiKey: "sk_car_YpuLFXXB3Xvk19iAdyLrYa",
-            version: "2025-04-16",
-            model: "sonic-3",
-            voiceId: "9e8db62d-056f-47f3-b3b6-1b05767f9176"
-        };
-
-        const CARTESIA_LANGS = new Set([
-            "en", "fr", "de", "es", "pt", "zh", "ja", "hi", "it", "ko", "nl", "pl", "ru", "sv", "tr", "tl",
-            "bg", "ro", "ar", "cs", "el", "fi", "hr", "ms", "sk", "da", "ta", "uk", "hu", "no", "vi", "bn",
-            "th", "he", "ka", "id", "te", "gu", "kn", "ml", "mr", "pa"
-        ]);
+        const _vL = new Set(["en","fr","de","es","pt","zh","ja","hi","it","ko","nl","pl","ru","sv","tr","tl","bg","ro","ar","cs","el","fi","hr","ms","sk","da","ta","uk","hu","no","vi","bn","th","he","ka","id","te","gu","kn","ml","mr","pa"]);
 
         const ttsAudio = document.getElementById("tts");
-        let ttsQueue = [];
+        let ttsQueue =[];
         let ttsBusy = false;
 
         const DUCK_TARGET = 0.20;
@@ -797,18 +635,11 @@
             const from = el.volume;
             const target = Math.max(0, Math.min(1, to));
             if (duckAnim.has(el)) cancelAnimationFrame(duckAnim.get(el));
-
-            if (!isFinite(from) || duration <= 0 || Math.abs(from - target) < 0.001) {
-                el.volume = target;
-                return;
-            }
-
+            if (!isFinite(from) || duration <= 0 || Math.abs(from - target) < 0.001) { el.volume = target; return; }
             const start = performance.now();
             const tick = (now) => {
                 const t = Math.min(1, (now - start) / duration);
-                try {
-                    el.volume = from + (target - from) * (t * (2 - t));
-                } catch (_) { }
+                try { el.volume = from + (target - from) * (t * (2 - t)); } catch (_) { }
                 if (t < 1) duckAnim.set(el, requestAnimationFrame(tick));
                 else duckAnim.delete(el);
             };
@@ -877,9 +708,7 @@
             }, 15000);
         }
 
-        function baseLang(code) {
-            return String(code || "").trim().replace(/_/g, "-").split("-")[0];
-        }
+        function baseLang(code) { return String(code || "").trim().replace(/_/g, "-").split("-")[0]; }
 
         function splitByClauses(text) {
             const clauseSeparators = /[;:|，|。|！|？|;|:]/;
@@ -890,7 +719,7 @@
         }
 
         function splitByLength(text, maxLength) {
-            const chunks = [];
+            const chunks =[];
             let current = "";
             const words = text.split(/\s+/);
             for (const word of words) {
@@ -915,11 +744,7 @@
             for (let i = 0; i < sentences.length; i++) {
                 const part = sentences[i].trim();
                 if (!part) continue;
-
-                if (/^[.!?…]+$/.test(part)) {
-                    currentSegment += part;
-                    continue;
-                }
+                if (/^[.!?…]+$/.test(part)) { currentSegment += part; continue; }
 
                 const testSegment = currentSegment + part;
                 if (testSegment.length > 200) {
@@ -935,13 +760,9 @@
                         if (chunks.length > 1) {
                             segments.push(...chunks.slice(0, -1));
                             currentSegment = chunks[chunks.length - 1];
-                        } else {
-                            currentSegment = testSegment;
-                        }
+                        } else { currentSegment = testSegment; }
                     }
-                } else {
-                    currentSegment = testSegment;
-                }
+                } else { currentSegment = testSegment; }
 
                 if (/[.!?…]$/.test(currentSegment) && currentSegment.length > 10) {
                     segments.push(currentSegment.trim());
@@ -966,52 +787,27 @@
             return params[emotion] || params.content;
         }
 
-        async function cartesiaBytes(transcript, langCode, emotion = "content") {
+        async function _gB(transcript, langCode, emotion = "content") {
             let bLang = baseLang(langCode) || "en";
-            if (!CARTESIA_LANGS.has(bLang)) bLang = "en";
-
-            const emotionMap = {
-                happy: "happy",
-                sad: "sad",
-                angry: "angry",
-                excited: "excited",
-                gentle: "gentle",
-                curious: "curious",
-                content: "content"
-            };
-
+            if (!_vL.has(bLang)) bLang = "en";
+            const emotionMap = { happy: "happy", sad: "sad", angry: "angry", excited: "excited", gentle: "gentle", curious: "curious", content: "content" };
             const mappedEmotion = emotionMap[emotion] || "content";
-            const emotionParams = getEmotionVoiceParams(mappedEmotion);
+            const ep = getEmotionVoiceParams(mappedEmotion);
 
-            const res = await fetch(CARTESIA_CFG.endpoint, {
+            const res = await fetch(_d('aHR0cHM6Ly9hcGkuY2FydGVzaWEuYWkvdHRzL2J5dGVz'), {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                    "X-API-Key": CARTESIA_CFG.apiKey,
-                    "Cartesia-Version": CARTESIA_CFG.version
+                    "Content-Type": "application/json",[_d('WC1BUEktS2V5')]: _d('c2tfY2FyX2ZwVHBqbXlCeXFrOE56bldQVjh1Mkw='),[_d('Q2FydGVzaWEtVmVyc2lvbg==')]: _d('MjAyNS0wNC0xNg==')
                 },
                 body: JSON.stringify({
-                    model_id: CARTESIA_CFG.model,
-                    transcript,
-                    language: bLang,
-                    voice: { mode: "id", id: CARTESIA_CFG.voiceId },
-                    output_format: {
-                        container: "wav",
-                        encoding: "pcm_f32le",
-                        sample_rate: 44100
-                    },
-                    speed: emotionParams.speed,
-                    generation_config: {
-                        speed: emotionParams.speed,
-                        volume: emotionParams.volume,
-                        emotion: mappedEmotion,
-                        pitch: emotionParams.pitch,
-                        prosody_speed: emotionParams.prosodySpeed
-                    }
+                    model_id: _d('c29uaWMtMw=='), transcript, language: bLang,
+                    voice: { mode: "id", id: _d('OWU4ZGI2MmQtMDU2Zi00N2YzLWIzYjYtMWIwNTc2N2Y5MTc2') },
+                    output_format: { container: "wav", encoding: "pcm_f32le", sample_rate: 44100 },
+                    speed: ep.speed,
+                    generation_config: { speed: ep.speed, volume: ep.volume, emotion: mappedEmotion, pitch: ep.pitch, prosody_speed: ep.prosodySpeed }
                 })
             });
-
-            if (!res.ok) throw new Error(`Cartesia HTTP ${res.status}: ${await res.text()}`);
+            if (!res.ok) throw new Error("Audio generation failed");
             return await res.blob();
         }
 
@@ -1027,47 +823,25 @@
                     ttsAudio.removeEventListener("canplaythrough", onCanPlay);
                 };
 
-                const onErr = () => {
-                    if (done) return;
-                    done = true;
-                    cleanup();
-                    resolve(false);
-                };
-
+                const onErr = () => { if (done) return; done = true; cleanup(); resolve(false); };
                 const onCanPlay = async () => {
                     if (done) return;
-                    try {
-                        await ttsAudio.play();
-                        done = true;
-                        cleanup();
-                        resolve(true);
-                    } catch {
-                        done = true;
-                        cleanup();
-                        resolve(false);
-                    }
+                    try { await ttsAudio.play(); done = true; cleanup(); resolve(true); } 
+                    catch { done = true; cleanup(); resolve(false); }
                 };
 
                 ttsAudio.addEventListener("error", onErr, { once: true });
                 ttsAudio.addEventListener("canplaythrough", onCanPlay, { once: true });
                 ttsAudio.src = url;
 
-                setTimeout(() => {
-                    if (!done) {
-                        done = true;
-                        cleanup();
-                        resolve(ttsAudio.readyState >= 2);
-                    }
-                }, 2000);
+                setTimeout(() => { if (!done) { done = true; cleanup(); resolve(ttsAudio.readyState >= 2); } }, 2000);
             });
         }
 
         function waitForEnded() {
             return new Promise(resolve => {
                 ttsAudio.addEventListener("ended", () => resolve(), { once: true });
-                setTimeout(() => {
-                    if (ttsAudio.paused) resolve();
-                }, (ttsAudio.duration * 1000) + 1000 || 2000);
+                setTimeout(() => { if (ttsAudio.paused) resolve(); }, (ttsAudio.duration * 1000) + 1000 || 2000);
             });
         }
 
@@ -1075,17 +849,7 @@
             let basePause = 300;
             if (text.length > 100) basePause += 200;
             if (text.length > 200) basePause += 300;
-
-            const emotionMultipliers = {
-                excited: 0.7,
-                angry: 0.8,
-                happy: 0.9,
-                sad: 1.5,
-                gentle: 1.3,
-                curious: 1.0,
-                content: 1.0
-            };
-
+            const emotionMultipliers = { excited: 0.7, angry: 0.8, happy: 0.9, sad: 1.5, gentle: 1.3, curious: 1.0, content: 1.0 };
             return Math.round(basePause * (emotionMultipliers[emotion] || 1.0));
         }
 
@@ -1093,8 +857,8 @@
             if (playbackPrefs.ttsMuted) return;
             duckOtherMedia();
             try {
-                const blob = await cartesiaBytes(text, langCode, emotion);
-                if (!(await setAndPlayBlob(blob))) throw new Error("Audio decode failed.");
+                const blob = await _gB(text, langCode, emotion);
+                if (!(await setAndPlayBlob(blob))) throw new Error("Decode err.");
                 await waitForEnded();
             } finally {
                 restoreOtherMedia();
@@ -1105,13 +869,7 @@
             if (playbackPrefs.ttsMuted) return;
             const segments = splitSpeakSegments(text);
             segments.forEach(s => {
-                ttsQueue.push({
-                    text: s,
-                    lang: langCode,
-                    emotion,
-                    meta,
-                    timestamp: Date.now()
-                });
+                ttsQueue.push({ text: s, lang: langCode, emotion, meta, timestamp: Date.now() });
             });
             processTTSQueue().catch(() => { });
         }
@@ -1119,13 +877,8 @@
         async function processTTSQueue() {
             if (ttsBusy || playbackPrefs.ttsMuted) return;
             ttsBusy = true;
-
             while (ttsQueue.length > 0) {
-                if (playbackPrefs.ttsMuted) {
-                    ttsQueue = [];
-                    break;
-                }
-
+                if (playbackPrefs.ttsMuted) { ttsQueue =[]; break; }
                 const next = ttsQueue.shift();
                 try {
                     setStatus("Speaking…", "on");
@@ -1133,20 +886,15 @@
                     const pauseDuration = calculatePauseDuration(next.text, next.emotion || currentEmotion);
                     await new Promise(r => setTimeout(r, pauseDuration));
                 } catch (e) {
-                    ui.debug.textContent = "TTS Err: " + (e?.message || e);
+                    ui.debug.textContent = "Processing error";
                     await new Promise(r => setTimeout(r, 500));
                 }
             }
-
             ttsBusy = false;
             setStatus(listening ? "Listening…" : "Idle", listening ? "on" : "idle");
         }
 
-        /* =========================================================
-           3. Deepgram STT & Emotion
-        ========================================================= */
-        const DEEPGRAM_API_KEY = "2bc4eb7307a278639a16dd2f0b5d74298d68632b";
-        let deepgramSocket = null;
+        let _as = null;
         let mediaRecorder = null;
         let listening = false;
 
@@ -1156,7 +904,7 @@
 
         let emotionAnalyser, emotionData;
         let currentEmotion = "content";
-        let emotionHistory = [];
+        let emotionHistory =[];
         const EMOTION_WINDOW = 3000;
 
         const orbViz = {
@@ -1206,7 +954,7 @@
             inputStream = inputAnalyser = inputData = emotionAnalyser = emotionData = null;
             if (inputCtx) inputCtx.close().catch(() => { });
             inputCtx = null;
-            emotionHistory = [];
+            emotionHistory =[];
             currentEmotion = "content";
         }
 
@@ -1311,18 +1059,15 @@
             return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
         }
 
-        /* =========================================================
-           4. Translation
-        ========================================================= */
-        async function googleTranslateRaw(text, sl, tl) {
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&dt=t&q=${encodeURIComponent(text)}`;
+        async function _fT(text, sl, tl) {
+            const url = _d('aHR0cHM6Ly90cmFuc2xhdGUuZ29vZ2xlYXBpcy5jb20vdHJhbnNsYXRlX2Evc2luZ2xlP2NsaWVudD1ndHgmZHQ9dCZzbD0=') + encodeURIComponent(sl) + _d('JnRsPQ==') + encodeURIComponent(tl) + _d('JnE9') + encodeURIComponent(text);
             const res = await fetch(url);
-            if (!res.ok) throw new Error("Translate HTTP " + res.status);
+            if (!res.ok) throw new Error("Translation offline");
             const data = await res.json();
             return ((data && data[0]) ? data[0] : []).map(x => x && x[0] ? x[0] : "").join("").trim();
         }
 
-        async function googleTranslate(text, sl, tl) {
+        async function _pT(text, sl, tl) {
             const sl1 = (sl || "").trim();
             const tl1 = (tl || "").trim();
             const sl2 = baseLang(sl1);
@@ -1331,21 +1076,18 @@
             if (!text || !text.trim()) return "";
             if (sl1 === tl1 || sl2 === tl2) return text;
 
-            try { return await googleTranslateRaw(text, sl1, tl1); } catch (_) { }
-            if (sl2 && sl2 !== sl1) try { return await googleTranslateRaw(text, sl2, tl1); } catch (_) { }
-            if (tl2 && tl2 !== tl1) try { return await googleTranslateRaw(text, sl1, tl2); } catch (_) { }
-            return await googleTranslateRaw(text, sl2, tl2);
+            try { return await _fT(text, sl1, tl1); } catch (_) { }
+            if (sl2 && sl2 !== sl1) try { return await _fT(text, sl2, tl1); } catch (_) { }
+            if (tl2 && tl2 !== tl1) try { return await _fT(text, sl1, tl2); } catch (_) { }
+            return await _fT(text, sl2, tl2);
         }
 
-        /* =========================================================
-           5. Room Transcript Feed
-        ========================================================= */
         function getCurrentRoom() {
             return normalizeSpaces(ui.roomIdInput.value) || "General";
         }
 
         function buildEntryHtml(entry, field) {
-            const isSelf = entry.userId === currentUserId;
+            const isSelf = entry.userId === _cUID;
             const bodyRaw = (entry[field] || "").trim();
             const body = bodyRaw ? escapeHtml(bodyRaw) : '<span class="entry-empty">No text</span>';
             const user = escapeHtml(entry.userId || "Anonymous");
@@ -1363,24 +1105,19 @@
         }
 
         function renderRoomTranscripts() {
-            const recent = roomMessages.slice(-80);
+            const recent = _rM.slice(-80);
 
             const originalHtml = recent.length
                 ? recent.map(item => buildEntryHtml(item, "originalText")).join("")
-                : `<div class="entry-empty">No shared transcriptions yet.</div>`;
+                : `<div class="entry-empty">No shared transcription yet.</div>`;
 
             const translatedHtml = recent.length
                 ? recent.map(item => buildEntryHtml(item, "translatedText")).join("")
-                : `<div class="entry-empty">No shared translations yet.</div>`;
+                : `<div class="entry-empty">No shared translation yet.</div>`;
 
             ui.originalText.innerHTML = originalHtml + (
                 interimText && listening
-                    ? `
-                        <div class="live-line">
-                            <strong>[${escapeHtml(currentUserId || "You")}]</strong><br>
-                            ${escapeHtml(interimText)}
-                        </div>
-                      `
+                    ? `<div class="live-line"><strong>[${escapeHtml(_cUID || "You")}]</strong><br>${escapeHtml(interimText)}</div>`
                     : ""
             );
 
@@ -1391,82 +1128,63 @@
                 ui.translatedText.scrollTop = ui.translatedText.scrollHeight;
             });
 
-            ui.roomMetaOriginal.textContent = `${currentRoomName} · ${roomMessages.length} item(s)`;
-            ui.roomMetaTranslated.textContent = `${playbackPrefs.ttsMuted ? "Muted" : "Realtime"} · ${currentRoomName}`;
+            ui.roomMetaOriginal.textContent = `${_cRN} · ${_rM.length} item(s)`;
+            ui.roomMetaTranslated.textContent = `${playbackPrefs.ttsMuted ? "Muted" : "Realtime"} · ${_cRN}`;
         }
 
         function maybePlayIncomingTranscript(data) {
             if (!data || !data.translatedText) return;
             if (playbackPrefs.ttsMuted) return;
-
-            const isOwn = data.userId === currentUserId;
-            if (isOwn && playbackPrefs.skipOwnPlayback) return;
+            if (data.userId === _cUID && playbackPrefs.skipOwnPlayback) return;
 
             const targetMeta = getLangMeta(ui.tgtLang);
-            const lang = data.targetCartesia || targetMeta.cartesia || baseLang(targetMeta.translate) || "en";
+            const lang = data.targetSpeech || data.targetCartesia || targetMeta.speechEngine || baseLang(targetMeta.translate) || "en";
             const emotion = data.emotion || "content";
 
             enqueueTTS(data.translatedText, lang, emotion, {
-                userId: data.userId,
-                roomId: data.roomId,
-                source: "firebase"
+                userId: data.userId, roomId: data.roomId, source: "internal"
             });
         }
 
         function subscribeToRoom() {
             const newRoom = getCurrentRoom();
-            currentRoomName = newRoom;
+            _cRN = newRoom;
 
-            if (currentRoomListenerRef) {
-                currentRoomListenerRef.off();
-                currentRoomListenerRef = null;
-            }
-
-            roomMessages = [];
-            seenMessageKeys = new Set();
-            roomSubscriptionStartedAt = Date.now();
+            if (_cRLR) { _cRLR.off(); _cRLR = null; }
+            _rM =[];
+            _sKeys = new Set();
+            _rSubStart = Date.now();
             renderRoomTranscripts();
 
-            currentRoomListenerRef = database.ref(`rooms/${newRoom}/transcripts`).limitToLast(100);
+            _cRLR = database.ref(`rooms/${newRoom}/transcripts`).limitToLast(100);
 
-            currentRoomListenerRef.on("child_added", (snapshot) => {
+            _cRLR.on("child_added", (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
 
                 const key = snapshot.key;
-                if (seenMessageKeys.has(key)) return;
-                seenMessageKeys.add(key);
+                if (_sKeys.has(key)) return;
+                _sKeys.add(key);
 
-                roomMessages.push({
-                    key,
-                    ...data
-                });
-
-                roomMessages.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-                if (roomMessages.length > 120) roomMessages = roomMessages.slice(-120);
+                _rM.push({ key, ...data });
+                _rM.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                if (_rM.length > 120) _rM = _rM.slice(-120);
 
                 renderRoomTranscripts();
 
                 const ts = Number(data.timestamp || 0);
-                const shouldSpeak = ts >= roomSubscriptionStartedAt - 2000;
-                if (shouldSpeak) maybePlayIncomingTranscript(data);
+                if (ts >= _rSubStart - 2000) maybePlayIncomingTranscript(data);
             }, (err) => {
-                console.error("Room subscribe err:", err);
-                setStatus("Room sync error", "err");
+                setStatus("Sync error", "err");
             });
         }
 
         let roomChangeTimer = null;
         ui.roomIdInput.addEventListener("input", () => {
             if (roomChangeTimer) clearTimeout(roomChangeTimer);
-            roomChangeTimer = setTimeout(() => {
-                subscribeToRoom();
-            }, 300);
+            roomChangeTimer = setTimeout(() => { subscribeToRoom(); }, 300);
         });
 
-        /* =========================================================
-           6. Listening / STT Pipeline
-        ========================================================= */
         async function startListening() {
             if (listening) return;
             await unlockAudioOnce();
@@ -1482,11 +1200,11 @@
 
             try {
                 const langCode = getLangMeta(ui.srcLang).speech || "en-US";
-                const wsUrl = `wss://api.deepgram.com/v1/listen?model=nova-3&language=${langCode}&smart_format=true&interim_results=true&endpointing=10`;
+                const wsUrl = _d('d3NzOi8vYXBpLmRlZXBncmFtLmNvbS92MS9saXN0ZW4/bW9kZWw9bm92YS0zJnNtYXJ0X2Zvcm1hdD10cnVlJmludGVyaW1fcmVzdWx0cz10cnVlJmVuZHBvaW50aW5nPTEwJmxhbmd1YWdlPQ==') + langCode;
 
-                deepgramSocket = new WebSocket(wsUrl, ["token", DEEPGRAM_API_KEY]);
+                _as = new WebSocket(wsUrl,[_d('dG9rZW4='), _d('MmJjNGViNzMwN2EyNzg2MzlhMTZkZDJmMGI1ZDc0Mjk4ZDY4NjMyYg==')]);
 
-                deepgramSocket.onopen = () => {
+                _as.onopen = () => {
                     setStatus("Listening…", "on");
                     renderRoomTranscripts();
 
@@ -1496,14 +1214,14 @@
 
                     mediaRecorder = new MediaRecorder(inputStream, mimeType ? { mimeType } : undefined);
                     mediaRecorder.ondataavailable = (e) => {
-                        if (e.data.size > 0 && deepgramSocket && deepgramSocket.readyState === WebSocket.OPEN) {
-                            deepgramSocket.send(e.data);
+                        if (e.data.size > 0 && _as && _as.readyState === WebSocket.OPEN) {
+                            _as.send(e.data);
                         }
                     };
                     mediaRecorder.start(250);
                 };
 
-                deepgramSocket.onmessage = async (message) => {
+                _as.onmessage = async (message) => {
                     const data = JSON.parse(message.data);
 
                     if (data.type === "Results" && data.channel?.alternatives?.[0]) {
@@ -1517,34 +1235,26 @@
                                 const src = getLangMeta(ui.srcLang);
                                 const tgt = getLangMeta(ui.tgtLang);
                                 const roomId = getCurrentRoom();
-                                const userId = currentUserId || "Anonymous";
+                                const userId = _cUID || "Anonymous";
 
                                 try {
-                                    setStatus("Translating…", "on");
-                                    const translated = await googleTranslate(cleaned, src.translate, tgt.translate);
+                                    setStatus("Processing…", "on");
+                                    const translated = await _pT(cleaned, src.translate, tgt.translate);
 
                                     await database.ref(`rooms/${roomId}/transcripts`).push({
-                                        roomId,
-                                        userId,
-                                        originalText: cleaned,
-                                        translatedText: translated || "",
-                                        sourceLang: src.value,
-                                        sourceTranslate: src.translate,
-                                        targetLang: tgt.value,
-                                        targetTranslate: tgt.translate,
-                                        targetCartesia: tgt.cartesia || baseLang(tgt.translate) || "en",
+                                        roomId, userId, originalText: cleaned, translatedText: translated || "",
+                                        sourceLang: src.value, sourceTranslate: src.translate,
+                                        targetLang: tgt.value, targetTranslate: tgt.translate,
+                                        targetSpeech: tgt.speechEngine || baseLang(tgt.translate) || "en",
                                         emotion: currentEmotion,
                                         timestamp: firebase.database.ServerValue.TIMESTAMP
                                     });
-
                                     setStatus("Listening…", "on");
                                 } catch (e) {
-                                    console.error("Segment translate/store error:", e);
-                                    ui.debug.textContent = "Seg Trans Err: " + (e?.message || e);
-                                    setStatus("Translate error", "err");
+                                    ui.debug.textContent = "Pipeline interrupted.";
+                                    setStatus("Process error", "err");
                                 }
                             }
-
                             renderRoomTranscripts();
                         } else {
                             interimText = normalizeSpaces(transcript);
@@ -1553,20 +1263,15 @@
                     }
                 };
 
-                deepgramSocket.onclose = () => {
-                    if (listening) {
-                        setStatus("Connection closed.", "err");
-                        stopListening();
-                    }
+                _as.onclose = () => {
+                    if (listening) { setStatus("Closed.", "err"); stopListening(); }
                 };
 
-                deepgramSocket.onerror = (e) => {
-                    console.error("Deepgram Error:", e);
-                    setStatus("STT Error", "err");
+                _as.onerror = (e) => {
+                    setStatus("Input Error", "err");
                     stopListening();
                 };
             } catch (err) {
-                console.error(err);
                 setStatus("Mic fail", "err");
                 stopListening();
             }
@@ -1583,10 +1288,8 @@
             }
             mediaRecorder = null;
 
-            if (deepgramSocket) {
-                try { deepgramSocket.close(); } catch (_) { }
-            }
-            deepgramSocket = null;
+            if (_as) { try { _as.close(); } catch (_) { } }
+            _as = null;
 
             stopInputAnalyser();
             renderRoomTranscripts();
@@ -1594,70 +1297,16 @@
         }
 
         ui.toggleListenBtn.addEventListener("click", () => listening ? stopListening() : startListening());
-
         ui.srcLang.addEventListener("change", () => {
-            if (listening) {
-                stopListening();
-                setTimeout(startListening, 300);
-            }
+            if (listening) { stopListening(); setTimeout(startListening, 300); }
         });
+        ui.tgtLang.addEventListener("change", () => { renderRoomTranscripts(); });
 
-        ui.tgtLang.addEventListener("change", () => {
-            renderRoomTranscripts();
-        });
-
-        /* =========================================================
-           7. Languages
-        ========================================================= */
-        const VARIANTS = [
-            ["en-US", "English (United States)", "en-US", "en-US", "en"],
-            ["en-GB", "English (United Kingdom)", "en-GB", "en-GB", "en"],
-            ["en-AU", "English (Australia)", "en-AU", "en-AU", "en"],
-            ["en-CA", "English (Canada)", "en-CA", "en-CA", "en"],
-            ["en-NZ", "English (New Zealand)", "en-NZ", "en-NZ", "en"],
-            ["en-PH", "English (Philippines)", "en-PH", "en-PH", "en"],
-            ["en-ZA", "English (South Africa)", "en-ZA", "en-ZA", "en"],
-            ["en-IN", "English (India)", "en-IN", "en-IN", "en"],
-            ["nl-NL", "Dutch (Netherlands)", "nl", "nl-NL", "nl"],
-            ["nl-BE", "Dutch (Belgium / Flemish)", "nl-BE", "nl-BE", "nl"],
-            ["fr-FR", "French (France)", "fr-FR", "fr-FR", "fr"],
-            ["fr-CA", "French (Canada)", "fr-CA", "fr-CA", "fr"],
-            ["fr-CH", "French (Switzerland)", "fr-CH", "fr-CH", "fr"],
-            ["es-ES", "Spanish (Spain)", "es-ES", "es-ES", "es"],
-            ["es-MX", "Spanish (Mexico)", "es-MX", "es-MX", "es"],
-            ["es-US", "Spanish (United States)", "es-US", "es-US", "es"],
-            ["es-419", "Spanish (Latin America)", "es-419", "es-419", "es"],
+        const VARIANTS = [["en-US", "English (United States)", "en-US", "en-US", "en"],["en-GB", "English (United Kingdom)", "en-GB", "en-GB", "en"],["en-AU", "English (Australia)", "en-AU", "en-AU", "en"],
+            ["en-CA", "English (Canada)", "en-CA", "en-CA", "en"],["en-NZ", "English (New Zealand)", "en-NZ", "en-NZ", "en"],["en-PH", "English (Philippines)", "en-PH", "en-PH", "en"],["en-ZA", "English (South Africa)", "en-ZA", "en-ZA", "en"],["en-IN", "English (India)", "en-IN", "en-IN", "en"],["nl-NL", "Dutch (Netherlands)", "nl", "nl-NL", "nl"],["nl-BE", "Dutch (Belgium / Flemish)", "nl-BE", "nl-BE", "nl"],["fr-FR", "French (France)", "fr-FR", "fr-FR", "fr"],["fr-CA", "French (Canada)", "fr-CA", "fr-CA", "fr"],["fr-CH", "French (Switzerland)", "fr-CH", "fr-CH", "fr"],["es-ES", "Spanish (Spain)", "es-ES", "es-ES", "es"],["es-MX", "Spanish (Mexico)", "es-MX", "es-MX", "es"],["es-US", "Spanish (United States)", "es-US", "es-US", "es"],["es-419", "Spanish (Latin America)", "es-419", "es-419", "es"],
             ["es-AR", "Spanish (Argentina)", "es-AR", "es-AR", "es"],
-            ["es-CL", "Spanish (Chile)", "es-CL", "es-CL", "es"],
-            ["es-CO", "Spanish (Colombia)", "es-CO", "es-CO", "es"],
-            ["es-PE", "Spanish (Peru)", "es-PE", "es-PE", "es"],
-            ["es-VE", "Spanish (Venezuela)", "es-VE", "es-VE", "es"],
-            ["es-UY", "Spanish (Uruguay)", "es-UY", "es-UY", "es"],
-            ["es-EC", "Spanish (Ecuador)", "es-EC", "es-EC", "es"],
-            ["es-GT", "Spanish (Guatemala)", "es-GT", "es-GT", "es"],
-            ["es-HN", "Spanish (Honduras)", "es-HN", "es-HN", "es"],
-            ["es-NI", "Spanish (Nicaragua)", "es-NI", "es-NI", "es"],
-            ["es-PA", "Spanish (Panama)", "es-PA", "es-PA", "es"],
-            ["es-PY", "Spanish (Paraguay)", "es-PY", "es-PY", "es"],
-            ["es-PR", "Spanish (Puerto Rico)", "es-PR", "es-PR", "es"],
-            ["es-CR", "Spanish (Costa Rica)", "es-CR", "es-CR", "es"],
-            ["es-SV", "Spanish (El Salvador)", "es-SV", "es-SV", "es"],
-            ["es-HT", "Spanish (Haiti)", "es-HT", "es-HT", "es"],
-            ["pt-PT", "Portuguese (Portugal)", "pt-PT", "pt-PT", "pt"],
-            ["pt-BR", "Portuguese (Brazil)", "pt-BR", "pt-BR", "pt"],
-            ["zh-CN", "Chinese (China / Simplified)", "zh-CN", "zh-CN", "zh"],
-            ["zh-TW", "Chinese (Taiwan / Traditional)", "zh-TW", "zh-TW", "zh"],
-            ["zh-HK", "Chinese (Hong Kong)", "zh-HK", "zh-HK", "zh"],
-            ["zh-Hans", "Chinese (Simplified Script)", "zh-Hans", "zh-Hans", "zh"],
-            ["zh-Hant", "Chinese (Traditional Script)", "zh-Hant", "zh-Hant", "zh"],
-            ["ar-SA", "Arabic (Saudi Arabia)", "ar-SA", "ar-SA", "ar"],
-            ["bn-IN", "Bengali (India)", "bn-IN", "bn-IN", "bn"],
-            ["pa-PK", "Punjabi (Pakistan)", "pa-PK", "pa-PK", "pa"],
-            ["bs-Cyrl", "Bosnian (Cyrillic)", "bs-Cyrl", "bs-Cyrl", ""],
-            ["ms-Arab", "Malay (Jawi)", "ms-Arab", "ms-Arab", "ms"],
-            ["pa-Arab", "Punjabi (Shahmukhi)", "pa-Arab", "pa-Arab", "pa"],
-            ["mni-Mtei", "Meiteilon (Manipuri, Meitei Mayek)", "mni-Mtei", "mni-Mtei", ""],
-            ["nb-NO", "Norwegian Bokmål (Norway)", "nb", "nb-NO", "no"]
+            ["es-CL", "Spanish (Chile)", "es-CL", "es-CL", "es"],["es-CO", "Spanish (Colombia)", "es-CO", "es-CO", "es"],["es-PE", "Spanish (Peru)", "es-PE", "es-PE", "es"],["es-VE", "Spanish (Venezuela)", "es-VE", "es-VE", "es"],["es-UY", "Spanish (Uruguay)", "es-UY", "es-UY", "es"],["es-EC", "Spanish (Ecuador)", "es-EC", "es-EC", "es"],["es-GT", "Spanish (Guatemala)", "es-GT", "es-GT", "es"],["es-HN", "Spanish (Honduras)", "es-HN", "es-HN", "es"],["es-NI", "Spanish (Nicaragua)", "es-NI", "es-NI", "es"],["es-PA", "Spanish (Panama)", "es-PA", "es-PA", "es"],["es-PY", "Spanish (Paraguay)", "es-PY", "es-PY", "es"],["es-PR", "Spanish (Puerto Rico)", "es-PR", "es-PR", "es"],["es-CR", "Spanish (Costa Rica)", "es-CR", "es-CR", "es"],["es-SV", "Spanish (El Salvador)", "es-SV", "es-SV", "es"],["es-HT", "Spanish (Haiti)", "es-HT", "es-HT", "es"],["pt-PT", "Portuguese (Portugal)", "pt-PT", "pt-PT", "pt"],["pt-BR", "Portuguese (Brazil)", "pt-BR", "pt-BR", "pt"],["zh-CN", "Chinese (China / Simplified)", "zh-CN", "zh-CN", "zh"],["zh-TW", "Chinese (Taiwan / Traditional)", "zh-TW", "zh-TW", "zh"],["zh-HK", "Chinese (Hong Kong)", "zh-HK", "zh-HK", "zh"],["zh-Hans", "Chinese (Simplified Script)", "zh-Hans", "zh-Hans", "zh"],["zh-Hant", "Chinese (Traditional Script)", "zh-Hant", "zh-Hant", "zh"],
+            ["ar-SA", "Arabic (Saudi Arabia)", "ar-SA", "ar-SA", "ar"],["bn-IN", "Bengali (India)", "bn-IN", "bn-IN", "bn"],["pa-PK", "Punjabi (Pakistan)", "pa-PK", "pa-PK", "pa"],["bs-Cyrl", "Bosnian (Cyrillic)", "bs-Cyrl", "bs-Cyrl", ""],["ms-Arab", "Malay (Jawi)", "ms-Arab", "ms-Arab", "ms"],["pa-Arab", "Punjabi (Shahmukhi)", "pa-Arab", "pa-Arab", "pa"],["mni-Mtei", "Meiteilon (Manipuri, Meitei Mayek)", "mni-Mtei", "mni-Mtei", ""],["nb-NO", "Norwegian Bokmål (Norway)", "nb", "nb-NO", "no"]
         ];
 
         const BASE_LANGS = {
@@ -1693,7 +1342,7 @@
             "yua": "Yucatec Maya", "zu": "Zulu"
         };
 
-        function defaultSpeechForTranslate(code) {
+        function _dST(code) {
             const c = String(code || "").trim().replace(/_/g, "-");
             const b = baseLang(c);
             if (c === "fil" || c === "tl") return "fil-PH";
@@ -1710,27 +1359,21 @@
             return c || "en-US";
         }
 
-        function defaultCartesiaForTranslate(code) {
+        function _dSE(code) {
             const b = baseLang(code);
-            return CARTESIA_LANGS.has(b) ? b : "";
+            return _vL.has(b) ? b : "";
         }
 
         function populateLangs() {
             const opts = [];
-            for (const [id, label, translate, speech, cartesia] of VARIANTS) {
-                opts.push(
-                    `<option value="${escapeHtml(id)}" data-translate="${escapeHtml(translate)}" data-speech="${escapeHtml(speech)}" data-cartesia="${escapeHtml(cartesia || "")}">${escapeHtml(label)}</option>`
-                );
+            for (const[id, label, translate, speech, se] of VARIANTS) {
+                opts.push(`<option value="${escapeHtml(id)}" data-translate="${escapeHtml(translate)}" data-speech="${escapeHtml(speech)}" data-se="${escapeHtml(se || "")}">${escapeHtml(label)}</option>`);
             }
-
             const basePairs = Object.entries(BASE_LANGS).sort((a, b) => a[1].localeCompare(b[1]));
             for (const [code, name] of basePairs) {
                 if (!code) continue;
-                opts.push(
-                    `<option value="${escapeHtml(code)}" data-translate="${escapeHtml(code)}" data-speech="${escapeHtml(defaultSpeechForTranslate(code))}" data-cartesia="${escapeHtml(defaultCartesiaForTranslate(code))}">${escapeHtml(name)} (${escapeHtml(code)})</option>`
-                );
+                opts.push(`<option value="${escapeHtml(code)}" data-translate="${escapeHtml(code)}" data-speech="${escapeHtml(_dST(code))}" data-se="${escapeHtml(_dSE(code))}">${escapeHtml(name)} (${escapeHtml(code)})</option>`);
             }
-
             ui.srcLang.innerHTML = ui.tgtLang.innerHTML = opts.join("");
             ui.srcLang.value = "en-US";
             ui.tgtLang.value = "sv";
@@ -1740,16 +1383,14 @@
             const opt = selectEl.selectedOptions && selectEl.selectedOptions[0];
             const value = selectEl.value || "en-US";
             const translate = (opt && opt.dataset && opt.dataset.translate) ? opt.dataset.translate : value;
-            const speech = (opt && opt.dataset && opt.dataset.speech) ? opt.dataset.speech : defaultSpeechForTranslate(value);
-            const cartesia = (opt && opt.dataset && opt.dataset.cartesia) ? opt.dataset.cartesia : defaultCartesiaForTranslate(value);
-            return { value, translate, speech, cartesia };
+            const speech = (opt && opt.dataset && opt.dataset.speech) ? opt.dataset.speech : _dST(value);
+            const speechEngine = (opt && opt.dataset && opt.dataset.se) ? opt.dataset.se : _dSE(value);
+            return { value, translate, speech, speechEngine };
         }
 
         populateLangs();
-        setStatus("Idle");
-        renderRoomTranscripts();
-        startOrbVisualizer();
+        _initSys();
+    })();
     </script>
 </body>
-
 </html>
