@@ -1,0 +1,17 @@
+{
+  "firebase_app_js": "aHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy8xMC45LjAvZmlyZWJhc2UtYXBwLWNvbXBhdC5qcw==",
+  "firebase_auth_js": "aHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy8xMC45LjAvZmlyZWJhc2UtYXV0aC1jb21wYXQuanM=",
+  "firebase_db_js": "aHR0cHM6Ly93d3cuZ3N0YXRpYy5jb20vZmlyZWJhc2Vqcy8xMC45LjAvZmlyZWJhc2UtZGF0YWJhc2UtY29tcGF0Lmpz",
+  "firebase_config": "eyJhcGlLZXkiOiJBSXphU3lDVHlmQWg2bVN1Q29DaXhoVzZ0RlJVSnV5RFU3UGpTWVEiLCJhdXRoRG9tYWluIjoiZ2VuLWxhbmctY2xpZW50LTA5ODYxODQ0ODUuZmlyZWJhc2VhcHAuY29tIiwiZGF0YWJhc2VVUkwiOiJodHRwczovL2dlbi1sYW5nLWNsaWVudC0wOTg2MTg0NDg1LWRlZmF1bHQtcnRkYi5maXJlYmFzZWlvLmNvbSIsInByb2plY3RJZCI6Imdlbi1sYW5nLWNsaWVudC0wOTg2MTg0NDg1Iiwic3RvcmFnZUJ1Y2tldCI6Imdlbi1sYW5nLWNsaWVudC0wOTg2MTg0NDg1LmZpcmViYXNlc3RvcmFnZS5hcHAiLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjczMzUwNDAwMDQ5IiwiYXBwSWQiOiIxOjczMzUwNDAwMDQ5OndlYjo1ODIwYmFiNjY5OGY5N2Y3MDBlZDEwIiwibWVhc3VyZW1lbnRJZCI6IkctRlBWRjVCMVIwNyJ9",
+  "cartesia_url": "aHR0cHM6Ly9hcGkuY2FydGVzaWEuYWkvdHRzL2J5dGVz",
+  "cartesia_api_header": "WC1BUEktS2V5",
+  "cartesia_key": "c2tfY2FyX1lwdUxGWFhCM1h2azE5aUFkeUxyWWE=",
+  "cartesia_version_header": "Q2FydGVzaWEtVmVyc2lvbg==",
+  "cartesia_version_date": "MjAyNS0wNC0xNg==",
+  "google_translate_base": "aHR0cHM6Ly90cmFuc2xhdGUuZ29vZ2xlYXBpcy5jb20vdHJhbnNsYXRlX2Evc2luZ2xlP2NsaWVudD1ndHgmZHQ9dCZzbD0=",
+  "google_translate_tl": "JnRsPQ==",
+  "google_translate_q": "JnE9",
+  "deepgram_ws_url": "d3NzOi8vYXBpLmRlZXBncmFtLmNvbS92MS9saXN0ZW4/bW9kZWw9bm92YS0zJnNtYXJ0X2Zvcm1hdD10cnVlJmludGVyaW1fcmVzdWx0cz10cnVlJmVuZHBvaW50aW5nPTEw",
+  "deepgram_auth_type": "dG9rZW4=",
+  "deepgram_auth_token": "MmJjNGViNzMwN2EyNzg2MzlhMTZkZDJmMGI1ZDc0Mjk4ZDY4NjMyYg=="
+}
