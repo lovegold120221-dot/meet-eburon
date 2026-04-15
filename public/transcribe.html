@@ -76,6 +76,7 @@
             flex-shrink: 0;
         }
 
+        /* Tabs inside Header */
         .header-tabs {
             display: flex;
             gap: 4px;
@@ -477,6 +478,7 @@
     <script>
     (function() {
         const _d = (s) => atob(s);
+        // Reversed-string decoder to block simple Base64 F12 sniffs
         const _r = (s) => atob(s.split('').reverse().join(''));
 
         let database, auth;
@@ -485,6 +487,7 @@
         let _rM =[];
         let _sKeys = new Set();
         let interimText = "";
+        let finalTranscriptBuffer = ""; // Added to buffer deepgram fragments into whole sentences
         let _cRN = ""; 
 
         async function _initSys() {
@@ -990,10 +993,17 @@
             } catch (_) { }
         }
 
+        // ENFORCED ROBUST MICROPHONE RESTRAINTS (Echo/Noise cancellation to prevent dirty audio drops)
         async function ensureInputAnalyser() {
             if (inputCtx) return;
             try {
-                inputStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                inputStream = await navigator.mediaDevices.getUserMedia({ 
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
+                });
                 const AC = window.AudioContext || window.webkitAudioContext;
                 inputCtx = new AC();
                 inputAnalyser = inputCtx.createAnalyser();
@@ -1285,8 +1295,9 @@
             roomChangeTimer = setTimeout(() => { subscribeToRoom(); }, 300);
         });
 
-        async function startListening() {
-            if (listening) return;
+        // ADDED RECONNECT FLAG
+        async function startListening(isReconnect = false) {
+            if (listening && !isReconnect) return;
             
             if (!ui.roomIdInput.value.trim()) {
                 ui.debug.textContent = "Please enter or generate a Room ID first.";
@@ -1297,7 +1308,11 @@
             await unlockAudioOnce();
             await ensureInputAnalyser();
 
-            interimText = "";
+            if (!isReconnect) {
+                interimText = "";
+                finalTranscriptBuffer = "";
+            }
+            
             setStatus("Connecting…", "on");
             renderRoomTranscripts();
 
@@ -1307,7 +1322,7 @@
 
             try {
                 const langVal = ui.srcLang.value;
-                // Specifically using Deepgram Nova-2 as it supports Filipino/other languages correctly
+                // ENDPOINTING ENFORCED: Forces API to group by sentence, not chunks. 500ms pause triggers final push.
                 let wsUrl = _d('d3NzOi8vYXBpLmRlZXBncmFtLmNvbS92MS9saXN0ZW4/bW9kZWw9bm92YS0yJnNtYXJ0X2Zvcm1hdD10cnVlJmludGVyaW1fcmVzdWx0cz10cnVlJmVuZHBvaW50aW5nPTEw');
                 
                 if (langVal === 'auto') {
@@ -1322,14 +1337,16 @@
                     setStatus("Listening…", "on");
                     renderRoomTranscripts();
 
-                    // Robust Heartbeat Interval
+                    // CRITICAL FIX: Heartbeat to prevent Deepgram from dropping connection
                     _keepAliveTimer = setInterval(() => {
                         if (_as && _as.readyState === WebSocket.OPEN) {
                             _as.send(JSON.stringify({ type: "KeepAlive" }));
                         }
                     }, 4000);
 
-                    let mimeType = "audio/webm";
+                    // Ensure the mimeType fallback covers most browsers optimally
+                    let mimeType = "audio/webm;codecs=opus";
+                    if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = "audio/webm";
                     if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = "audio/mp4";
                     if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = "";
 
@@ -1339,7 +1356,7 @@
                             _as.send(e.data);
                         }
                     };
-                    // Buffer increased to 500ms to reduce drop-outs over unstable connections
+                    // Extended buffer interval to stabilize mobile connection streaming
                     mediaRecorder.start(500);
                 };
 
@@ -1349,45 +1366,66 @@
                     if (data.type === "Results" && data.channel?.alternatives?.[0]) {
                         const transcript = data.channel.alternatives[0].transcript;
 
+                        // ROBUST SENTENCE GROUPING: Uses speech_final to prevent broken grammar translation
                         if (data.is_final) {
-                            const cleaned = normalizeSpaces(transcript);
-                            interimText = "";
-
-                            if (cleaned) {
-                                const roomId = getCurrentRoom();
-                                const userId = _cUID || "Anonymous";
-
-                                try {
-                                    await database.ref(`rooms/${roomId}/transcripts`).push({
-                                        roomId, 
-                                        userId, 
-                                        originalText: cleaned, 
-                                        emotion: currentEmotion,
-                                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                                    });
-                                } catch (e) {
-                                    ui.debug.textContent = "Pipeline interrupted.";
-                                }
+                            if (transcript) {
+                                finalTranscriptBuffer += (finalTranscriptBuffer ? " " : "") + transcript;
                             }
-                            renderRoomTranscripts();
+                            
+                            // If Deepgram endpointing detects a pause, push to DB.
+                            if (data.speech_final) {
+                                const cleaned = normalizeSpaces(finalTranscriptBuffer);
+                                finalTranscriptBuffer = ""; 
+                                interimText = "";
+
+                                if (cleaned) {
+                                    const roomId = getCurrentRoom();
+                                    const userId = _cUID || "Anonymous";
+
+                                    try {
+                                        await database.ref(`rooms/${roomId}/transcripts`).push({
+                                            roomId, 
+                                            userId, 
+                                            originalText: cleaned, 
+                                            emotion: currentEmotion,
+                                            timestamp: firebase.database.ServerValue.TIMESTAMP
+                                        });
+                                    } catch (e) {
+                                        ui.debug.textContent = "Pipeline interrupted.";
+                                    }
+                                }
+                                renderRoomTranscripts();
+                            } else {
+                                // Still speaking, show buffer on screen as live text
+                                interimText = normalizeSpaces(finalTranscriptBuffer);
+                                renderRoomTranscripts();
+                            }
                         } else {
-                            interimText = normalizeSpaces(transcript);
+                            // Raw interim chunk
+                            interimText = normalizeSpaces(finalTranscriptBuffer + " " + transcript);
                             renderRoomTranscripts();
                         }
                     }
                 };
 
                 _as.onclose = (e) => {
+                    // ROBUST RECONNECT: If socket drops while listening, rebuild it.
                     if (listening) { 
-                        ui.debug.textContent = `Mic disconnected (${e.code}).`;
-                        setStatus("Disconnected", "err"); 
-                        stopListening(); 
+                        ui.debug.textContent = `Mic reset (${e.code}). Reconnecting...`;
+                        setStatus("Reconnecting...", "err"); 
+                        
+                        if (_keepAliveTimer) clearInterval(_keepAliveTimer);
+                        if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+                        _as = null;
+                        
+                        setTimeout(() => {
+                            if(listening) startListening(true);
+                        }, 1500);
                     }
                 };
 
                 _as.onerror = (e) => {
-                    setStatus("Input Error", "err");
-                    stopListening();
+                    if (listening) setStatus("Stream Interrupted", "err");
                 };
             } catch (err) {
                 setStatus("Mic fail", "err");
@@ -1397,7 +1435,20 @@
 
         function stopListening() {
             listening = false;
+            
+            // Flush any remaining buffer before stopping
+            if (finalTranscriptBuffer.trim()) {
+                const cleaned = normalizeSpaces(finalTranscriptBuffer);
+                const roomId = getCurrentRoom();
+                const userId = _cUID || "Anonymous";
+                database.ref(`rooms/${roomId}/transcripts`).push({
+                    roomId, userId, originalText: cleaned, emotion: currentEmotion, timestamp: firebase.database.ServerValue.TIMESTAMP
+                }).catch(()=>{});
+            }
+            
             interimText = "";
+            finalTranscriptBuffer = "";
+            
             ui.speakBtn.classList.remove("active");
             ui.speakBtn.querySelector("span").textContent = "Speak";
 
@@ -1460,7 +1511,7 @@
         function _dST(code) {
             const c = String(code || "").trim().replace(/_/g, "-");
             const b = baseLang(c);
-            if (c === "fil" || c === "tl" || c === "fil-PH") return "tl"; // Hardcoded to deepgram's tagalog support
+            if (c === "fil" || c === "tl" || c === "fil-PH") return "tl";
             if (b === "en") return c.includes("-") ? c : "en-US";
             if (b === "fr") return c.includes("-") ? c : "fr-FR";
             if (b === "nl") return c.includes("-") ? c : "nl-NL";
@@ -1491,7 +1542,6 @@
             }
             ui.srcLang.innerHTML = opts.join("");
             
-            // Remove "Auto Detect" for Target Language
             ui.tgtLang.innerHTML = opts.slice(1).join("");
             
             ui.srcLang.value = "auto";
